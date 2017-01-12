@@ -43,6 +43,10 @@ class config(object):
             return self.ctrl_config[key]
         return None
 
+    def get_device_id(self):
+        return self.device_id
+    def get_device_config_id(self):
+        return self.device_config_id
     def get_img_capture_invl(self):
         return self.get_ctrl_val('img_capture_invl')
 

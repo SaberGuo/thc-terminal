@@ -5,10 +5,12 @@
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/1/11
 """
-from conf import config
-from data_pool import data_pool
-import time
 import json
+import time
+
+from commons.data_pool import data_pool
+from commons.conf import config
+
 
 def build_msg(ads_v):
     data = build_ads(ads_v)

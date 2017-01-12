@@ -7,6 +7,17 @@
 """
 
 import time
+import os
+import json
+
+upload_count = 10
+tcpc_dst_url = "192.168.1.100"
+tcpc_dst_port = 6000
+
+self_ip = "192.168.1.199"
+self_mask = "255.255.255.0"
+self_gateway = "192.168.1.1"
+
 
 def timer_proc(interval_in_millisecond):
     loop_interval = 10      # 定时精度，也是循环间隔时间（毫秒），也是输出信息刷新间隔时间，它不能大于指定的最大延时时间，否则可能导致无任何输出
@@ -22,3 +33,25 @@ def timer_proc(interval_in_millisecond):
         millisecond = 0
         #print('\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond ), end = '\t\t')
     #print()
+
+def get_file_Size(path):
+    try:
+        size = os.path.getsize(path)
+        return size
+    except Exception as err:
+        print(err)
+
+def check_json_format(raw_msg):
+    """
+    用于判断一个字符串是否符合Json格式
+    :param self:
+    :return:
+    """
+    if isinstance(raw_msg, str):       # 首先判断变量是否为字符串
+        try:
+            json.loads(raw_msg, encoding='utf-8')
+        except ValueError:
+            return False
+        return True
+    else:
+        return False

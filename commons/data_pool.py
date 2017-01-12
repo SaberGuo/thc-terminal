@@ -13,8 +13,9 @@ class data_pool(object):
     max_size = 100
 
     database_file_path = ''
-    pi_table_name =''
-    data_table_name = ''
+    pi_table_name ='pis'
+    data_table_name = 'datas'
+    img_table_name = 'imgs'
 
 
     def __init__(self):
@@ -28,6 +29,12 @@ class data_pool(object):
                   (`date` int(32) NOT NULL,
                    `value` VARCHAR(256) NOT NULL
                     )'''.format(self.pi_table_name)
+        self.create_table(init_sql)
+        init_sql = '''CREATE TABLE IF NOT EXISTS `{0}`
+                  (`date` int(32) NOT NULL,
+                  `key` VARCHAR(32) NOT NULL,
+                   `value` VARCHAR(256) NOT NULL
+                    )'''.format(self.img_table_name)
         self.create_table(init_sql)
 
     def connect_database(self,path):
@@ -51,6 +58,12 @@ class data_pool(object):
         save_sql = "INSERT INTO {0} values (?, ?)".format(self.data_table_name)
         save_data = [(ms,data)]
         self.save(save_sql, save_data)
+    def get_data(self, count):
+        sql = "SELECT * FROM {0} LIMIT {1}".format(self.data_table_name, count)
+        return self.fetchall(sql)
+    def del_data(self, values):
+        sql = "DELETE FROM {0} WHERE `date` = ? AND `value` = ?".format(self.data_table_name)
+        self.delete(sql, values)
 
     def save_pi(self, ms, pi):
         save_sql = "INSERT INTO {0} values (?, ?)".format(self.pi_table_name)
@@ -64,9 +77,22 @@ class data_pool(object):
         for pi in pis:
             sum_pis+= pi[1]
         #delete
-        del_sql = "DELETE * FROM {0}".format(self.pi_table_name)
+        del_sql = "DELETE FROM {0}".format(self.pi_table_name)
         self.delete(del_sql,[])
         return sum_pis
+
+    def save_img(self, ms, img_path):
+        save_sql = "INSERT INTO {0} values (?, ?)".format(self.img_table_name)
+        save_data = [(ms,img_path)]
+        self.save(save_sql, save_data)
+
+    def get_imgs(self, count):
+        sql = "SELECT * FROM {0} LIMIT {1}".format(self.img_table_name, count)
+        return self.fetchall(sql)
+
+    def del_img(self, img):
+        sql = "DELETE FROM {0} WHERE `date`= ? AND `key`=? AND `value` = ?".format(self.img_table_name)
+        self.delete(sql, img)
 
     def create_table(self, sql):
         if sql is not None and sql != '':

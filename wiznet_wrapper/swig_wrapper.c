@@ -51,9 +51,6 @@ void init_conf(char *ip, char *mask, char *gateway){
     return;
 }
 
-
-
-
 char tcpc_buf[DATA_BUF_SIZE] = {0};
 int tcpc_buf_size = 0;
 int loopback_tcpc(int sn, char *ip, int port)
@@ -142,8 +139,75 @@ int loopback_tcpc(int sn, char *ip, int port)
     return ret;
 }
 
+char tcps_buf[DATA_BUF_SIZE] = {0};
+int tcps_buf_size = 0;
+int loopback_tcps(int sn, int port)
+{
+   int32_t ret;
+   uint16_t size = 0, sentsize=0;
+
+#ifdef _LOOPBACK_DEBUG_
+   uint8_t destip[4];
+   uint16_t destport;
+#endif
+
+   switch(getSn_SR(sn))
+   {
+      case SOCK_ESTABLISHED :
+         if(getSn_IR(sn) & Sn_IR_CON)
+         {
+#ifdef _LOOPBACK_DEBUG_
+			getSn_DIPR(sn, destip);
+			destport = getSn_DPORT(sn);
+
+			printf("%d:Connected - %d.%d.%d.%d : %d\r\n",sn, destip[0], destip[1], destip[2], destip[3], destport);
+#endif
+			setSn_IR(sn,Sn_IR_CON);
+         }
+		 if((size = getSn_RX_RSR(sn)) > 0) // Don't need to check SOCKERR_BUSY because it doesn't not occur.
+         {
+			if(size > DATA_BUF_SIZE) size = DATA_BUF_SIZE;
+			ret = srecv(sn, tcps_buf, size);
+
+			if(ret <= 0) return ret;      // check SOCKERR_BUSY & SOCKERR_XXX. For showing the occurrence of SOCKERR_BUSY.
+			sentsize = 0;
+			tcps_buf_size = size;
+			return 2;
+
+         }
+         break;
+      case SOCK_CLOSE_WAIT :
+#ifdef _LOOPBACK_DEBUG_
+         //printf("%d:CloseWait\r\n",sn);
+#endif
+         if((ret = sdisconnect(sn)) != SOCK_OK) return ret;
+#ifdef _LOOPBACK_DEBUG_
+         printf("%d:Socket Closed\r\n", sn);
+#endif
+         break;
+      case SOCK_INIT :
+#ifdef _LOOPBACK_DEBUG_
+    	 printf("%d:Listen, TCP server loopback, port [%d]\r\n", sn, port);
+#endif
+         if( (ret = slisten(sn)) != SOCK_OK) return ret;
+         break;
+      case SOCK_CLOSED:
+#ifdef _LOOPBACK_DEBUG_
+         //printf("%d:TCP server loopback start\r\n",sn);
+#endif
+         if((ret = ssocket(sn, Sn_MR_TCP, port, 0x00)) != sn) return ret;
+#ifdef _LOOPBACK_DEBUG_
+         //printf("%d:Socket opened\r\n",sn);
+#endif
+         break;
+      default:
+         break;
+   }
+   return 1;
+}
+
 void tcpc_recv(char *res, size_t *res_size){
-        printf("%s", tcpc_buf);
+    //printf("%s", tcpc_buf);
 	*res_size = tcpc_buf_size;
 	size_t i=0;
 	for(;i<*res_size;i++ ){
@@ -151,3 +215,14 @@ void tcpc_recv(char *res, size_t *res_size){
 	*res = 0;
 }
 
+void tcps_recv(char *res, size_t *res_size){
+    *res_size = tcps_buf_size;
+	size_t i=0;
+	for(;i<*res_size;i++ ){
+        *res++ = tcps_buf[i];}
+	*res = 0;
+}
+
+int socket_send(int sn, char *buf, size_t buf_size){
+    return ssend(sn, buf, buf_size);
+}

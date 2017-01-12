@@ -5,11 +5,13 @@
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/1/10
 """
-from power_ctrl import power_ctrl_init, dsp_power_ctrl,ad_power_ctrl
-from data_pool import data_pool
-from commons import timer_proc
-from uart import uart_controller
+import conclude
 from build_msg import *
+from commons.commons import timer_proc
+from commons.data_pool import data_pool
+from commons.gpio_ctrl import power_ctrl_init, dsp_power_ctrl,ad_power_ctrl
+from uart import uart_controller
+
 
 def main():
     #power on for dsp and ad
