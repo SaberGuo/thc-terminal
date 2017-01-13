@@ -1,0 +1,30 @@
+{
+    "device_id": "123456",
+    "device_config_id": "123",
+    "method": "push_param",
+    "config": {
+        "t_30": {
+          "port": "AD1",
+          "unit": "x",
+          "type": "temperature",
+          "desc": "30dep temperature",
+          "max_v": 80,
+          "min_v": -20
+        },
+        "t_15": {
+          "port": "AD2",
+          "unit": "x",
+          "type": "temperature",
+          "desc": "15dep temperature",
+          "max_v": 80,
+          "min_v": -20
+        }
+    },
+    "control": {
+        "img_capture_invl": "* * * * *",
+        "img_upload_invl": "* * * * *",
+        "data_capture_invl": "* * * * *",
+        "data_upload_invl": "* * * * *"
+    },
+    "ts": 1479798416
+}
