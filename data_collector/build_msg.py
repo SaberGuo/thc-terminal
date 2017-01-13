@@ -25,6 +25,7 @@ def build_msg(ads_v):
 def build_ads(ads_v):
     cf = config.get_instance()
     res = {}
+    print ads_v
     for i in range(len(ads_v)):
         ad_port = "AD{0}".format(i)
         ad_key, ad_rv = cf.parse_numeric_data(ads_v[i],ad_port)
