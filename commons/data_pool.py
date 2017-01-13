@@ -12,7 +12,7 @@ class data_pool(object):
     instance = None
     max_size = 100
 
-    database_file_path = ''
+    database_file_path = '../data/terminal.db'
     pi_table_name ='pis'
     data_table_name = 'datas'
     img_table_name = 'imgs'
@@ -136,4 +136,6 @@ class data_pool(object):
                     cu.execute(sql, d)
                     self.conn.commit()
                     cu.close()
-
+if __name__ == "__main__":
+    dp = data_pool.get_instance()
+    
