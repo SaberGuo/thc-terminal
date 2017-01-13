@@ -13,6 +13,10 @@ class config(object):
     instance = None
     min_s = 4000
     max_s = 65535
+    _is_debug = True
+    _debug_ip = "192.168.1.100"
+    _debug_port = 6000
+
     def __init__(self):
         self.cf = file(self.conf_file_path)
         self.cf_dict = json.load(self.cf)
@@ -20,6 +24,7 @@ class config(object):
         self.device_config_id = self.cf_dict['device_config_id']
         self.data_config = self.cf_dict['config']
         self.ctrl_config = self.cf_dict['control']
+
 
     def __str__(self):
         return json.dumps(self.cf_dict)

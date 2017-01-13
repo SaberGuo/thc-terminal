@@ -7,3 +7,4 @@
 """
 
 WIZNET_GOT_DATA = 2
+WIZNET_READY = 3

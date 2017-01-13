@@ -98,10 +98,11 @@ int loopback_tcpc(int sn, char *ip, int port)
                 if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
                 sentsize = 0;
 				tcpc_buf_size = size;
-				return 2;
+				return 2; //got recv data
 
                 // Data sentsize control
             }
+            return 3; // got ready for send
             //////////////////////////////////////////////////////////////////////////////////////////////
             break;
 
@@ -175,6 +176,7 @@ int loopback_tcps(int sn, int port)
 			return 2;
 
          }
+         return 3; //got ready for send
          break;
       case SOCK_CLOSE_WAIT :
 #ifdef _LOOPBACK_DEBUG_
