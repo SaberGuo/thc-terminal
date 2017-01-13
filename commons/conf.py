@@ -18,7 +18,7 @@ class config(object):
         self.cf_dict = json.load(self.cf)
         self.device_id = self.cf_dict['device_id']
         self.device_config_id = self.cf_dict['device_config_id']
-        self.data_config = self.cf_dict['data']
+        self.data_config = self.cf_dict['config']
         self.ctrl_config = self.cf_dict['control']
 
     def __str__(self):

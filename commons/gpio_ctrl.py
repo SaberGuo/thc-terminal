@@ -7,7 +7,7 @@
 """
 import RPi.GPIO as gpio
 
-from commons.commons import timer_proc
+from commons import timer_proc
 
 DSP_POWER_CTRL_GPIO = 13
 AD_POWER_CTRL_GPIO = 17
@@ -20,8 +20,8 @@ TIME_FOR_RELAYER = 210
 
 def power_ctrl_init():
     gpio.setmode(gpio.BCM)
-    gpio.setup(DSP_POWER_CTRL_GPIO, gpio.OUTPUT)
-    gpio.setup(AD_POWER_CTRL_GPIO, gpio.OUTPUT)
+    gpio.setup(DSP_POWER_CTRL_GPIO, gpio.OUT)
+    gpio.setup(AD_POWER_CTRL_GPIO, gpio.OUT)
     gpio.output(DSP_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(AD_POWER_CTRL_GPIO, gpio.LOW)
 

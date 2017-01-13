@@ -8,6 +8,7 @@
 
 import serial
 import struct
+from random import randint
 
 class uart_controller(object):
     start_pos = 3
@@ -15,6 +16,7 @@ class uart_controller(object):
     uart_sign = '/dev/ttyAMA0'
     uart_baud = 9600
     uart_timeout = 0.5
+    _is_debug_ = True
 
     ad_start_pos = [{ 'start_pos':0x10, 'value_num':4},
                     { 'start_pos':0x20, 'value_num':4},
@@ -96,9 +98,18 @@ class uart_controller(object):
     def read_by_modbus(self, start_pos, value_num):
         command = uart_controller.form_read_command(1, 3, start_pos, value_num)
         hexer = uart_controller.int_array_to_string(command).decode("hex")
-        self.ser.write(hexer)
-        ans = self.ser.readall()
+        if self._is_debug_:
+            res_int = self.construct_debug_data()
+            ans = uart_controller.int_array_to_string(res_int).decode("hex")
+        else:
+            self.ser.write(hexer)
+            ans = self.ser.readall()
         return ans
+    def construct_debug_data(self):
+        res_int = [1,3,4]
+        for i in range(10):
+            res_int.append(randint(0,255))
+        return res_int
 
     def read_ad_values(self):
         res = []
@@ -108,4 +119,3 @@ class uart_controller(object):
                 res.append(uart_controller.bytes_to_ushort(ans,self.start_pos+i*2))
 
         return res
-
