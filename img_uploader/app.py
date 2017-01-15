@@ -140,6 +140,7 @@ def main_proc(event,ready_event, test_suit):
 
 if __name__ == "__main__":
     test_suit = None
+    init_tcpc()
     if config._is_debug:
         test_suit = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tt = threading.Thread(target=test_proc,name="test proc")
