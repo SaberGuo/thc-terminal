@@ -55,13 +55,14 @@ char tcpc_buf[DATA_BUF_SIZE] = {0};
 int tcpc_buf_size = 0;
 int loopback_tcpc(int sn, char *ip, int port)
 {
+        printf("loopback_tcpc:ip-%s\n",ip );
 	uint8_t tcpc_ip[4]={0};
 	int tcpc_port = 1000;
 	str_to_netarray(tcpc_ip, 4, ip);
-        tcpc_ip[0] = 192;
-        tcpc_ip[1] = 168;
-        tcpc_ip[2] = 1;
-        tcpc_ip[3] = 100;
+        //tcpc_ip[0] = 192;
+        //tcpc_ip[1] = 168;
+        //tcpc_ip[2] = 1;
+        //tcpc_ip[3] = 100;
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0, sentsize=0;

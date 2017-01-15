@@ -19,15 +19,15 @@ def build_msg(ads_v):
     if pi_key is not None and pi_content is not None:
         data[pi_key] = pi_content
     msg_dict = {}
-    msg_dict[str(time.time())] = data
+    msg_dict[str(int(time.time()))] = data
+    print "res for data:", msg_dict
     return json.dumps(msg_dict)
 
 def build_ads(ads_v):
     cf = config.get_instance()
     res = {}
-    print ads_v
     for i in range(len(ads_v)):
-        ad_port = "AD{0}".format(i)
+        ad_port = "AD{0}".format(i+1)
         ad_key, ad_rv = cf.parse_numeric_data(ads_v[i],ad_port)
         if ad_key is not None and ad_rv is not None:
             res[ad_key] = {'value': ad_rv}
@@ -42,6 +42,6 @@ def build_PI():
     for key, content in cf.data_config.items():
         if content['port'] == pi_port:
             return (key, {'value':pi_v})
-    return None
+    return (None,None)
 
 
