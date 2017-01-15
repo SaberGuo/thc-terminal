@@ -9,7 +9,7 @@ import json
 
 
 class config(object):
-    conf_file_path = "conf/terminal.conf"
+    conf_file_path = "../conf/config.json"
     instance = None
     min_s = 4000
     max_s = 65535
@@ -20,6 +20,7 @@ class config(object):
     def __init__(self):
         self.cf = file(self.conf_file_path)
         self.cf_dict = json.load(self.cf)
+        self.cf.close()
         self.device_id = self.cf_dict['device_id']
         self.device_config_id = self.cf_dict['device_config_id']
         self.data_config = self.cf_dict['config']

@@ -4,6 +4,7 @@
   @author: xiao guo
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/1/11
+  @todo: need add another pi port
 """
 import sqlite3
 import os
@@ -25,11 +26,13 @@ class data_pool(object):
                    `value` VARCHAR(256) NOT NULL
                     )'''.format(self.data_table_name)
         self.create_table(init_sql)
+
         init_sql = '''CREATE TABLE IF NOT EXISTS `{0}`
                   (`date` int(32) NOT NULL,
                    `value` VARCHAR(256) NOT NULL
                     )'''.format(self.pi_table_name)
         self.create_table(init_sql)
+
         init_sql = '''CREATE TABLE IF NOT EXISTS `{0}`
                   (`date` int(32) NOT NULL,
                   `key` VARCHAR(32) NOT NULL,

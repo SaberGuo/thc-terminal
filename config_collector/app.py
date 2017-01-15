@@ -22,6 +22,8 @@ def init_tcpc():
     wiz.init_hardware()
     wiz.init_conf(self_ip, self_mask, self_gateway)
 
+def deal_crontab(new_control, old_control):
+    pass
 def recv_proc(event):
     p =socket.gethostbyname(tcpc_dst_url)
     cf = config.get_instance()
@@ -36,12 +38,11 @@ def recv_proc(event):
                     and jres.has_key("method") and jres['method'] == 'push_param'\
                     and jres.has_key("config")\
                     and jres.has_key("control"):
-                        pass
+                        deal_crontab(jres['control'], cf.ctrl_config)
                 event.set()
 
 def main_proc(event):
-    global is_uploaded
-    is_uploaded = False
+
     cf = config.get_instance()
     up_dict = {'device_id': cf.get_device_id(),
                'method':'pull_param'}
@@ -56,9 +57,10 @@ if __name__ == "__main__":
 
     init_tcpc()
     et = threading.Event()
+    rt = threading.Event()
     #start socket
-    rt = threading.Thread(target=recv_proc, args=(et))
-    mt = threading.Thread(target=main_proc, args=(et))
+    rt = threading.Thread(target=recv_proc, args=(et, rt, test_suit))
+    mt = threading.Thread(target=main_proc, args=(et, rt, test_suit))
     rt.setDaemon(True)
     rt.start()
     mt.start()
