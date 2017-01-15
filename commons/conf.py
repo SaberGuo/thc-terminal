@@ -34,6 +34,12 @@ class config(object):
         if config.instance == None:
             config.instance = config()
         return config.instance
+    def update_config(self, jconf):
+        self.cf = file(self.conf_file_path,'w')
+        str_conf = json.dumps(jconf)
+        self.cf.write(str_conf)
+        self.cf.flush()
+        self.cf.close()
 
     def parse_numeric_data(self, value, port):
         for data_key, data_item in self.data_config.items():
