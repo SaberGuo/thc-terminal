@@ -5,7 +5,7 @@
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/1/10
 """
-
+import conclude
 import serial
 import struct
 from random import randint
@@ -39,7 +39,7 @@ class uart_controller(object):
             self.ser.close()
 
     @classmethod
-    def int_to_hex_str(cls, v):
+    def int_to_hex_string(cls, v):
         s = hex(v)
         if len(s[2::])%2==1:
             s ="0" +s[2::]
@@ -92,7 +92,7 @@ class uart_controller(object):
         return data
 
     @classmethod
-    def bytes_to_ushort(buf, offset):
+    def bytes_to_ushort(cls, buf, offset):
         return struct.unpack_from(">H", buf, offset)[0]
 
     def read_by_modbus(self, start_pos, value_num):
@@ -119,3 +119,9 @@ class uart_controller(object):
                 res.append(uart_controller.bytes_to_ushort(ans,self.start_pos+i*2))
 
         return res
+
+
+if __name__ == "__main__":
+    ut = uart_controller.get_instance()
+    ut.uart_open()
+    print "read res:", ut.read_ad_values()

@@ -9,12 +9,12 @@ import json
 
 
 class config(object):
-    conf_file_path = "../conf/config.json"
+    conf_file_path = "../data/config.json"
     instance = None
-    min_s = 4000
-    max_s = 65535
+    min_s = 4000.0
+    max_s = 65535.0
     _is_debug = True
-    _debug_ip = "192.168.1.100"
+    _debug_ip = "127.0.0.1"
     _debug_port = 6000
 
     def __init__(self):
@@ -42,7 +42,7 @@ class config(object):
                 min_v = data_item['min_v']
                 res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
                 return (data_key, res)
-        return None
+        return (None,None)
 
     def get_ctrl_val(self, key):
         if key in self.ctrl_config.keys():

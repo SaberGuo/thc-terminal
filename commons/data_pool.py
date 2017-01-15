@@ -46,10 +46,15 @@ class data_pool(object):
             self.conn = sqlite3.connect(':memory:')
 
     def get_cursor(self):
+        if self.conn is None:
+            self.connect_database(self.database_file_path)
+        return self.conn.cursor()
+
+    def close_all(self):
         if self.conn is not None:
-            return self.conn.cursor()
-        else:
-            return None
+            self.conn.cursor().close()
+            self.conn.close()
+            self.conn = None
 
     @staticmethod
     def get_instance():
@@ -84,9 +89,9 @@ class data_pool(object):
         self.delete(del_sql,[])
         return sum_pis
 
-    def save_img(self, ms, img_path):
-        save_sql = "INSERT INTO {0} values (?, ?)".format(self.img_table_name)
-        save_data = [(ms,img_path)]
+    def save_img(self, ms, key, img_path):
+        save_sql = "INSERT INTO {0} values (?,?,?)".format(self.img_table_name)
+        save_data = [(ms,key,img_path)]
         self.save(save_sql, save_data)
 
     def get_imgs(self, count):
@@ -102,7 +107,7 @@ class data_pool(object):
             cu = self.get_cursor()
             cu.execute(sql)
             self.conn.commit()
-            cu.close()
+            self.close_all()
 
     def save(self, sql, data):
         if sql is not None and sql !='':
@@ -112,7 +117,7 @@ class data_pool(object):
                     for d in data:
                         cu.execute(sql, d)
                         self.conn.commit()
-                        cu.close()
+                        self.close_all()
 
 
     def fetchall(self, sql):
@@ -138,7 +143,11 @@ class data_pool(object):
                 for d in data:
                     cu.execute(sql, d)
                     self.conn.commit()
-                    cu.close()
+                    self.close_all() 
 if __name__ == "__main__":
     dp = data_pool.get_instance()
+    print dp.get_data(5)
+    dp.close_all()
+    print dp.get_imgs(5)
+    
     

@@ -12,7 +12,7 @@ from commons.conf import config
 import time
 import json
 import socket
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_Size
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size
 import threading
 import wiznet_wrapper.wiznet as wiz
 from wiznet_wrapper import WIZNET_GOT_DATA, WIZNET_READY
@@ -34,29 +34,35 @@ def test_proc():
         sys.exit(1)
     recv_size = 0
     is_start_recv_img = False
+    print "test_proc: waiting for connection..."
+    client, addr = server_socket.accept()
+    print "test_proc: connected"
     while True:
-        print "waiting for connection..."
-        client, addr = server_socket.accept()
         data = client.recv(1024)
-        print "recieve data length:" + len(data)
+        print "test_proc: recieve data length:",len(data)
         if is_start_recv_img:
+            img_local_file.write(data)
             recv_size=recv_size-len(data)
             if recv_size<=0:
+                img_local_file.close()
                 is_start_recv_img = False
                 data = json.dumps({'device_id': "123456", 'method':'image_uploaded', 'ts':time.time()})
                 client.sendall(data)
-        try:
-            data = json.loads(data)
-        except:
-            print "test_proc: recieve is not a json!"
-            sys.exit(1)
-        print "recieve data:" + data
-        if data.has_key("method") and data['method'] == "push_image_ready":
-            recv_size = int(data['size'])
-            is_start_recv_img = True
-            print "send data back"
-            data = json.dumps({'device_id': "123456", 'method':'push_image_ready', 'ts':time.time()})
-            client.sendall(data)
+        else:
+            try:
+                data = json.loads(data)
+            except:
+                print "test_proc: recieve is not a json!"
+                sys.exit(1)
+            print "test_proc:recieve data:", data
+            if data.has_key("method") and data['method'] == "push_image":
+                recv_size = int(data['size'])
+                is_start_recv_img = True
+            
+                img_local_file = open('./test{0}.jpg'.format(time.time()),'wb')
+                print "test_proc: send data back"
+                data = json.dumps({'device_id': "123456", 'method':'push_image_ready', 'ts':time.time()})
+                client.sendall(data)
 
 
 def recv_proc(event, ready_event, test_suit):
@@ -74,12 +80,13 @@ def recv_proc(event, ready_event, test_suit):
                 ready_event.set()
             if ret == WIZNET_GOT_DATA:
                 res = wiz.tcpc_recv(1024)
-        if res is not None:
+        if res is not None and len(res)>0:
             try:
                 jres = json.loads(res)
+                print "recv_proc:",jres
                 event.set()
             except:
-                print "recieve not json!"
+                print "recv_proc: recieve not json!"
 
 
 def main_proc(event,ready_event, test_suit):
@@ -96,30 +103,47 @@ def main_proc(event,ready_event, test_suit):
 
     for img in imgs:
         up_dict['key'] = img[1]
-        up_dict['size'] = get_file_Size(img[2])
+        up_dict['size'] = get_file_size(img[2])
         up_dict['acquisition_time'] = img[0]
         if config._is_debug and test_suit is not None:
+            print "main_proc:send json:", up_dict
             test_suit.send(json.dumps(up_dict))
         else:
             wiz.socket_send(json.dumps(up_dict))
         event.wait(3)
         if event.is_set() and jres is not None and  jres.has_key('method') and jres['method'] == 'push_image_ready':
+            event.clear()
             f = open(img[2],'rb')
             jres = None
-            chunk = f.read()
+            chunk_size = get_file_size(img[2])
+            tmp_size = 0
             if config._is_debug and test_suit is not None:
+                for i in range(chunk_size/1024):
+                    chunk = f.read(1024)
+                    tmp_size = tmp_size + 1024
+                    test_suit.send(chunk)
+                chunk = f.read(1024)
                 test_suit.send(chunk)
+                tmp_size = tmp_size+len(chunk)
+                print "main_proc: final send chunk with size:",tmp_size
             else:
-                wiz.socket_send(0, chunk, len(chunk))
+                for i in range(chunk_size/1024):
+                    chunk = f.read(1024) 
+                    wiz.socket_send(0, chunk, len(chunk))
+                chunk = f.read(1024)
+                wiz.socket_send(0,chunk, len(chunk))
             event.wait(3)
             if event.is_set() and jres is not None and jres.has_key('method') and jres['method'] == 'image_uploaded':
-                dp.del_img(img)
+                event.clear()
+                print "main_proc:image uploaded"
+                #dp.del_img(img)
 
 if __name__ == "__main__":
     test_suit = None
     if config._is_debug:
         test_suit = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tt = threading.Thread(target=test_proc)
+        tt = threading.Thread(target=test_proc,name="test proc")
+        tt.setDaemon(True)
         tt.start()
         try:
             test_suit.connect((config._debug_ip, config._debug_port))
@@ -128,8 +152,9 @@ if __name__ == "__main__":
             exit(1)
     et = threading.Event()
     rt = threading.Event()
-    mp = threading.Thread(target=main_proc, args=(et,rt,test_suit))
-    rp = threading.Thread(target=recv_proc, args=(et,rt,test_suit))
+    mp = threading.Thread(target=main_proc, args=(et,rt,test_suit), name="main proc")
+    rp = threading.Thread(target=recv_proc, args=(et,rt,test_suit), name="recv proc")
+    rp.setDaemon(True)
     rp.start()
     mp.start()
     mp.join()

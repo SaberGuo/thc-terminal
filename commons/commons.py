@@ -34,7 +34,7 @@ def timer_proc(interval_in_millisecond):
         #print('\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond ), end = '\t\t')
     #print()
 
-def get_file_Size(path):
+def get_file_size(path):
     try:
         size = os.path.getsize(path)
         return size

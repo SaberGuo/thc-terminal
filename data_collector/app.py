@@ -23,6 +23,7 @@ def main():
     uc = uart_controller.get_instance()
     uc.uart_open()
     ads_v = uc.read_ad_values()
+    print ads_v
     data_str = build_msg(ads_v)
     dp = data_pool.get_instance()
     dp.save_data(time.time(),data_str)
