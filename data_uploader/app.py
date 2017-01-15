@@ -9,7 +9,7 @@
 import conclude
 from commons.data_pool import data_pool
 from commons.conf import config
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway
+from commons.commons import timer_proc,upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway
 import threading
 import wiznet_wrapper.wiznet as wiz
 from wiznet_wrapper import WIZNET_GOT_DATA,WIZNET_READY
@@ -26,6 +26,7 @@ def init_tcpc():
     wiz.init_conf(self_ip, self_mask, self_gateway)
 
 def test_proc():
+    print "start test_proc"
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((config._debug_ip, config._debug_port))
     try:
@@ -44,6 +45,7 @@ def test_proc():
         client.close()
 
 def recv_proc(event, ready_event, test_suit):
+    print "start recv_proc"
     p =socket.gethostbyname(tcpc_dst_url)
     res = None
     while True:
@@ -56,12 +58,17 @@ def recv_proc(event, ready_event, test_suit):
             if ret == WIZNET_GOT_DATA:
                 res = wiz.tcpc_recv(1024)
         if res is not None:
-            jres = json.loads(res)
-            if jres.has_key('method') and jres['method'] == 'data_uploaded':
-                event.set()
+            try:
+               jres = json.loads(res)
+               print "server replay:",jres
+               res = None
+               if jres.has_key('method') and jres['method'] == 'data_uploaded':
+                  event.set()
+            except:
+               pass
+
 def main_proc(event, ready_event, test_suit):
-    global is_uploaded
-    is_uploaded = False
+    print "start main_proc" 
     cf = config.get_instance()
     up_dict = {'device_id': cf.get_device_id(),
                'device_config_id':cf.get_device_config_id(),
@@ -86,6 +93,7 @@ if __name__ == "__main__":
     power_ctrl_init()
     net_power_ctrl()
     timer_proc(200)
+    print "power on!"
     init_tcpc()
     et = threading.Event()
     readyt = threading.Event()
@@ -94,12 +102,15 @@ if __name__ == "__main__":
     if config._is_debug:
         test_suit = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tt = threading.Thread(target=test_proc)
+        tt.setDaemon(True)
         tt.start()
         try:
+            timer_proc(2000)
             test_suit.connect((config._debug_ip, config._debug_port))
         except socket.error:
             print 'fail to setup socket connection'
             exit(1)
+  
     #start socket
     rt = threading.Thread(target=recv_proc, args=(et, readyt, test_suit))
     mt = threading.Thread(target=main_proc, args=(et, readyt, test_suit))
