@@ -58,8 +58,8 @@ def test_proc():
         print "test_proc: recieve data:" + data
         print "test_proc: send data back"
         cf = open("./config.json","r")
-        data = cf.readall()
-        client.sendall(data)
+        data = json.load(cf)
+        client.sendall(json.dumps(data))
         client.close()
 
 def recv_proc(event, ready_event, test_suit):
