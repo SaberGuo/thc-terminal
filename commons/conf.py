@@ -14,6 +14,7 @@ class config(object):
     min_s = 4000.0
     max_s = 65535.0
     _is_debug = True
+    _is_local = True
     _debug_ip = "127.0.0.1"
     _debug_port = 6000
 

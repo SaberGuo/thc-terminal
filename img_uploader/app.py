@@ -143,9 +143,10 @@ if __name__ == "__main__":
     init_tcpc()
     if config._is_debug:
         test_suit = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tt = threading.Thread(target=test_proc,name="test proc")
-        tt.setDaemon(True)
-        tt.start()
+        if config._is_local:
+            tt = threading.Thread(target=test_proc,name="test proc")
+            tt.setDaemon(True)
+            tt.start()
         try:
             test_suit.connect((config._debug_ip, config._debug_port))
         except socket.error:

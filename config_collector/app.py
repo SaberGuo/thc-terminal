@@ -111,9 +111,10 @@ if __name__ == "__main__":
     test_suit = None
     if config._is_debug:
         test_suit = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tt = threading.Thread(target=test_proc)
-        tt.setDaemon(True)
-        tt.start()
+        if config._is_local:
+            tt = threading.Thread(target=test_proc)
+            tt.setDaemon(True)
+            tt.start()
         try:
             timer_proc(2000)
             test_suit.connect((config._debug_ip, config._debug_port))
