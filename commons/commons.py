@@ -14,6 +14,11 @@ upload_count = 10
 tcpc_dst_url = "192.168.1.100"
 tcpc_dst_port = 8000
 
+data_up_sn = 0
+img_up_sn = 1
+config_download_sn = 2
+tcp_server_sn = 3
+
 self_ip = "192.168.1.199"
 self_mask = "255.255.255.0"
 self_gateway = "192.168.1.1"
