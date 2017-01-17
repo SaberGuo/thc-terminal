@@ -46,7 +46,7 @@ def test_proc():
             if recv_size<=0:
                 img_local_file.close()
                 is_start_recv_img = False
-                data = json.dumps({'device_id': "123456", 'method':'image_uploaded', 'ts':time.time()})
+                data = json.dumps({'device_id': "123456", 'method':'image_uploaded', 'ts':int(time.time())})
                 client.sendall(data)
         else:
             try:
@@ -59,7 +59,7 @@ def test_proc():
                 recv_size = int(data['size'])
                 is_start_recv_img = True
             
-                img_local_file = open('./test{0}.jpg'.format(time.time()),'wb')
+                img_local_file = open('./test{0}.jpg'.format(int(time.time())),'wb')
                 print "test_proc: send data back"
                 data = json.dumps({'device_id': "123456", 'method':'push_image_ready', 'ts':time.time()})
                 client.sendall(data)
@@ -72,7 +72,10 @@ def recv_proc(event, ready_event, test_suit):
     while True:
         if config._is_debug:
             ready_event.set()
-            res = test_suit.recv(1024)
+            try:
+                res = test_suit.recv(1024)
+            except:
+                print "recv error"
         else:
             ret = wiz.loopback_tcpc(0,str(p),tcpc_dst_port)
 
@@ -109,7 +112,7 @@ def main_proc(event,ready_event, test_suit):
             print "main_proc:send json:", up_dict
             test_suit.send(json.dumps(up_dict))
         else:
-            wiz.socket_send(json.dumps(up_dict))
+            wiz.socket_send(0, json.dumps(up_dict), len(json.dumps(up_dict)))
         event.wait(3)
         if event.is_set() and jres is not None and  jres.has_key('method') and jres['method'] == 'push_image_ready':
             event.clear()
@@ -137,6 +140,13 @@ def main_proc(event,ready_event, test_suit):
                 event.clear()
                 print "main_proc:image uploaded"
                 #dp.del_img(img)
+    up_dict = {'device_id': cf.get_device_id(),
+                'method': 'close_connection'}
+    if config._is_debug:
+        test_suit.send(json.dumps(up_dict))
+    else:
+        wiz.socket_send(0,json.dumps(up_dict),len(json.dumps(up_dict)))
+     
 
 if __name__ == "__main__":
     test_suit = None
