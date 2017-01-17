@@ -26,7 +26,7 @@ def main():
     print ads_v
     data_str = build_msg(ads_v)
     dp = data_pool.get_instance()
-    dp.save_data(time.time(),data_str)
+    dp.save_data(int(time.time()),data_str)
     #off the power
     dsp_power_ctrl()
     ad_power_ctrl()
