@@ -35,9 +35,12 @@ def deal_single_crontab(key, value):
         os.system('./change_single_crontab.sh "{0}" "{1} {2}"'.key, value, crontab_dict[key])
 
 def deal_crontab(new_control, old_control):
-    for key,value in new_control.items():
-        if value !=old_control[key]:
-            deal_single_crontab(key,value)
+    try:
+        for key,value in new_control.items():
+            if value !=old_control[key]:
+                deal_single_crontab(key,value)
+    except:
+        print "error for deal_crontab"
 
 def deal_config(new_config):
     config.get_instance().update_config(new_config)
