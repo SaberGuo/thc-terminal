@@ -77,14 +77,15 @@ def main_proc(event, ready_event, test_suit):
     dp = data_pool.get_instance()
     upload_values = dp.get_data(upload_count)
     for uv in upload_values:
-        up_dict['package'][str(uv[0])] = uv[1]
+        up_dict['package'][uv[0]] = json.loads(uv[1])
     jup_dict = json.dumps(up_dict)
+    print "main proc up dict:",jup_dict
     if config._is_debug:
         test_suit.send(jup_dict)
     else:
         ready_event.wait(5)
         if ready_event.is_set():
-            wiz.send(jup_dict, len(jup_dict))
+            wiz.socket_send(0, jup_dict, len(jup_dict))
     event.wait(5)
     if event.is_set():
         dp.del_data(upload_values)
@@ -113,8 +114,8 @@ if __name__ == "__main__":
             exit(1)
   
     #start socket
-    rt = threading.Thread(target=recv_proc, args=(et, readyt, test_suit))
-    mt = threading.Thread(target=main_proc, args=(et, readyt, test_suit))
+    rt = threading.Thread(target=recv_proc, args=(et, readyt, test_suit), name="recv_proc")
+    mt = threading.Thread(target=main_proc, args=(et, readyt, test_suit), name="main_proc")
     rt.setDaemon(True)
     rt.start()
     mt.start()
