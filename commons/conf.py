@@ -13,10 +13,10 @@ class config(object):
     instance = None
     min_s = 4000.0
     max_s = 65535.0
-    _is_debug = True
-    _is_local = True
-    _debug_ip = "127.0.0.1"
-    _debug_port = 6000
+    _is_debug = False 
+    _is_local = False
+    _debug_ip = "192.168.1.100"
+    _debug_port = 8000
 
     def __init__(self):
         self.cf = file(self.conf_file_path)

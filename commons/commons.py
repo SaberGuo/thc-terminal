@@ -12,7 +12,7 @@ import json
 
 upload_count = 10
 tcpc_dst_url = "192.168.1.100"
-tcpc_dst_port = 6000
+tcpc_dst_port = 8000
 
 self_ip = "192.168.1.199"
 self_mask = "255.255.255.0"
