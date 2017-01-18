@@ -9,7 +9,7 @@
 import conclude
 from commons.data_pool import data_pool
 from commons.conf import config
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,check_json_format
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,check_json_format,config_download_sn
 import threading
 import wiznet_wrapper.wiznet as wiz
 from wiznet_wrapper import WIZNET_GOT_DATA,WIZNET_READY
@@ -73,7 +73,7 @@ def recv_proc(event, ready_event, test_suit):
         if config._is_debug:
             res = test_suit.recv(1024)
         else:
-            ret = wiz.loopback_tcpc(0,str(p),tcpc_dst_port)
+            ret = wiz.loopback_tcpc(config_download_sn,str(p),tcpc_dst_port)
             if ret == WIZNET_READY:
                     ready_event.set()
             if ret == WIZNET_GOT_DATA:
@@ -100,8 +100,10 @@ def main_proc(event,ready_event, test_suit):
     else:
         ready_event.wait(5)
         if ready_event.is_set():
-            wiz.send(jup_dict, len(jup_dict))
+            wiz.socket_send(config_download_sn,jup_dict, len(jup_dict))
     event.wait(5)
+    if not config._is_debug:
+        wiz.socket_close(config_download_sn)
 
 if __name__ == "__main__":
     power_ctrl_init()

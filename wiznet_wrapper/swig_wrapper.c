@@ -229,3 +229,7 @@ void tcps_recv(char *res, size_t *res_size){
 int socket_send(int sn, char *buf, size_t buf_size){
     return ssend(sn, buf, buf_size);
 }
+
+int socket_close(int sn){
+    return sclose(sn);
+}

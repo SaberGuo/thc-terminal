@@ -12,7 +12,7 @@ from commons.conf import config
 import time
 import json
 import socket
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,img_up_sn
 import threading
 import wiznet_wrapper.wiznet as wiz
 from wiznet_wrapper import WIZNET_GOT_DATA, WIZNET_READY
@@ -77,7 +77,7 @@ def recv_proc(event, ready_event, test_suit):
             except:
                 print "recv error"
         else:
-            ret = wiz.loopback_tcpc(0,str(p),tcpc_dst_port)
+            ret = wiz.loopback_tcpc(img_up_sn,str(p),tcpc_dst_port)
 
             if ret == WIZNET_READY:
                 ready_event.set()
@@ -112,7 +112,7 @@ def main_proc(event,ready_event, test_suit):
             print "main_proc:send json:", up_dict
             test_suit.send(json.dumps(up_dict))
         else:
-            wiz.socket_send(0, json.dumps(up_dict), len(json.dumps(up_dict)))
+            wiz.socket_send(img_up_sn, json.dumps(up_dict), len(json.dumps(up_dict)))
         event.wait(3)
         if event.is_set() and jres is not None and  jres.has_key('method') and jres['method'] == 'push_image_ready':
             event.clear()
@@ -132,9 +132,9 @@ def main_proc(event,ready_event, test_suit):
             else:
                 for i in range(chunk_size/1024):
                     chunk = f.read(1024) 
-                    wiz.socket_send(0, chunk, len(chunk))
+                    wiz.socket_send(img_up_sn, chunk, len(chunk))
                 chunk = f.read(1024)
-                wiz.socket_send(0,chunk, len(chunk))
+                wiz.socket_send(img_up_sn,chunk, len(chunk))
             event.wait(3)
             if event.is_set() and jres is not None and jres.has_key('method') and jres['method'] == 'image_uploaded':
                 event.clear()
@@ -145,7 +145,8 @@ def main_proc(event,ready_event, test_suit):
     if config._is_debug:
         test_suit.send(json.dumps(up_dict))
     else:
-        wiz.socket_send(0,json.dumps(up_dict),len(json.dumps(up_dict)))
+        wiz.socket_send(img_up_sn,json.dumps(up_dict),len(json.dumps(up_dict)))
+        wiz.socket_close(img_up_sn)
      
 
 if __name__ == "__main__":
