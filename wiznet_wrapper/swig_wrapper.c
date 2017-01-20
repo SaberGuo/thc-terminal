@@ -222,19 +222,72 @@ void tcps_recv(char *res, size_t *res_size){
 	*res = 0;
 }
 
-int socket_send(int sn, char *buf, size_t buf_size){
-    if(getSn_SR(sn) == SOCK_ESTABLISHED)
-    {
-        if(getSn_IR(sn) & Sn_IR_CON){
-            setSn_IR(sn, Sn_IR_CON);
-        }
-        return ssend(sn, buf, buf_size);
-    }
-    else{
-        return 0;
-    }
 
+int socket_send(int sn, char *ip, int port，char *buf, size_t buf_size)
+{
+	uint8_t tcpc_ip[4]={0};
+	int tcpc_port = 1000;
+	str_to_netarray(tcpc_ip, 4, ip);
+
+    tcpc_port = port;
+    int32_t ret; // return value for SOCK_ERRORs
+	uint16_t size = 0;
+    uint16_t any_port = 	50000;
+
+    // Socket Status Transitions
+    // Check the W5500 Socket n status register (Sn_SR, The 'Sn_SR' controlled by Sn_CR command or Packet send/recv status)
+    switch(getSn_SR(sn))
+    {
+        case SOCK_ESTABLISHED :
+            if(getSn_IR(sn) & Sn_IR_CON)	// Socket n interrupt register mask; TCP CON interrupt = connection with peer is successful
+            {
+#ifdef _LOOPBACK_DEBUG_
+                printf("%d:Connected to - %d.%d.%d.%d : %d\r\n",sn, tcpc_ip[0], tcpc_ip[1], tcpc_ip[2], tcpc_ip[3], tcpc_port);
+#endif
+                setSn_IR(sn, Sn_IR_CON);  // this interrupt should be write the bit cleared to '1'
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            // Data Transaction Parts; Handle the [data receive and send] process
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            return ssend(sn, buf, buf_size);
+            //////////////////////////////////////////////////////////////////////////////////////////////
+            break;
+
+        case SOCK_CLOSE_WAIT :
+#ifdef _LOOPBACK_DEBUG_
+            printf("%d:CloseWait\r\n",sn);
+#endif
+            if((ret=sdisconnect(sn)) != SOCK_OK) return ret;
+#ifdef _LOOPBACK_DEBUG_
+            printf("%d:Socket Closed\r\n", sn);
+#endif
+            break;
+
+        case SOCK_INIT :
+#ifdef _LOOPBACK_DEBUG_
+            printf("%d:Try to connect to the %d.%d.%d.%d : %d\r\n", sn, tcpc_ip[0], tcpc_ip[1], tcpc_ip[2], tcpc_ip[3], tcpc_port);
+            printf("%d: socke mode 0x%02x\n", sn, getSn_MR(sn));
+#endif
+            if( (ret = sconnect(sn, tcpc_ip, tcpc_port)) != SOCK_OK) return ret;	//	Try to TCP connect to the TCP server (destination)
+            break;
+
+        case SOCK_CLOSED:
+            printf("close the socket %d\n", sn);
+            sclose(sn);
+            if((ret=ssocket(sn, Sn_MR_TCP, any_port++, 0x00)) != sn) return ret; // TCP socket open with 'any_port' port number
+#ifdef _LOOPBACK_DEBUG_
+        printf("%d:TCP client loopback start\r\n",sn);
+        printf("%d:Socket opened\r\n",sn);
+#endif
+            break;
+        default:
+            break;
+    }
+	ret = 1;
+    return ret;
 }
+
 
 int socket_close(int sn){
     return sclose(sn);
