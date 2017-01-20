@@ -41,5 +41,7 @@ FRESULT f_read (FILE* fp, void* buff, UINT btr, UINT* br);			/* Read data from a
 FRESULT f_write (FILE* fp, const void* buff, UINT btw, UINT* bw);	/* Write data to a file */
 FRESULT f_mkdir (const char* dir, const char* path);								/* Create a sub directory */
 FRESULT f_unlink(const char* path);
+
+void save_img(char* path);
 #endif //WIZNET_FF_H
 

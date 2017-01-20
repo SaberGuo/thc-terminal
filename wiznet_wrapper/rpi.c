@@ -14,7 +14,7 @@ void bcm2835_initlize(){
     }
     bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);                   // The default
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); // 6.250MHz on RPI3
+    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_8); // 6.250MHz on RPI3
     bcm2835_spi_chipSelect(BCM2835_SPI_CS0);                      // chip select 0
     bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);      // low for enable chip
 }

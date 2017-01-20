@@ -20,7 +20,13 @@ void init_hardware(){
 }
 
 void init_conf(char *ip, char *mask, char *gateway){
-    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef},
+    ctlwizchip(CW_RESET_WIZCHIP,NULL);
+    uint8_t memsize[2][8] = { { 2, 2, 2, 2, 2, 2, 2, 2 }, { 2, 2, 2, 2, 2, 2, 2, 2 } };
+    if (ctlwizchip(CW_INIT_WIZCHIP, (void*) memsize) == -1) {
+		printf("WIZCHIP Initialized fail.\r\n");
+		while (1);
+	}
+    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0x55, 0x66},
         .ip = {192, 168, 1, 199},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
@@ -59,20 +65,10 @@ int loopback_tcpc(int sn, char *ip, int port)
 	uint8_t tcpc_ip[4]={0};
 	int tcpc_port = 1000;
 	str_to_netarray(tcpc_ip, 4, ip);
-        //tcpc_ip[0] = 192;
-        //tcpc_ip[1] = 168;
-        //tcpc_ip[2] = 1;
-        //tcpc_ip[3] = 100;
+
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
-	uint16_t size = 0, sentsize=0;
-    // Destination (TCP Server) IP info (will be connected)
-    // >> loopback_tcpc() function parameter
-    // >> Ex)
-    //	uint8_t destip[4] = 	{192, 168, 0, 214};
-    //	uint16_t destport = 	5000;
-
-    // Port number for TCP client (will be increased)
+	uint16_t size = 0;
     uint16_t any_port = 	50000;
 
     // Socket Status Transitions
@@ -109,7 +105,7 @@ int loopback_tcpc(int sn, char *ip, int port)
 
         case SOCK_CLOSE_WAIT :
 #ifdef _LOOPBACK_DEBUG_
-            //printf("%d:CloseWait\r\n",sn);
+            printf("%d:CloseWait\r\n",sn);
 #endif
             if((ret=sdisconnect(sn)) != SOCK_OK) return ret;
 #ifdef _LOOPBACK_DEBUG_
@@ -120,7 +116,7 @@ int loopback_tcpc(int sn, char *ip, int port)
         case SOCK_INIT :
 #ifdef _LOOPBACK_DEBUG_
             printf("%d:Try to connect to the %d.%d.%d.%d : %d\r\n", sn, tcpc_ip[0], tcpc_ip[1], tcpc_ip[2], tcpc_ip[3], tcpc_port);
-         printf("%d: socke mode 0x%02x\n", sn, getSn_MR(sn));
+            printf("%d: socke mode 0x%02x\n", sn, getSn_MR(sn));
 #endif
             if( (ret = sconnect(sn, tcpc_ip, tcpc_port)) != SOCK_OK) return ret;	//	Try to TCP connect to the TCP server (destination)
             break;
@@ -227,9 +223,23 @@ void tcps_recv(char *res, size_t *res_size){
 }
 
 int socket_send(int sn, char *buf, size_t buf_size){
-    return ssend(sn, buf, buf_size);
+    if(getSn_SR(sn) == SOCK_ESTABLISHED)
+    {
+        if(getSn_IR(sn) & Sn_IR_CON){
+            setSn_IR(sn, Sn_IR_CON);
+        }
+        return ssend(sn, buf, buf_size);
+    }
+    else{
+        return 0;
+    }
+
 }
 
 int socket_close(int sn){
     return sclose(sn);
+}
+
+int socket_disconnect(int sn){
+    return sdisconnect(sn);
 }

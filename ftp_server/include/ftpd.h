@@ -22,7 +22,7 @@
 #endif
 
 #define F_APP_FTP
-#define _FTP_DEBUG_
+//#define _FTP_DEBUG_
 
 
 #define LINELEN		100

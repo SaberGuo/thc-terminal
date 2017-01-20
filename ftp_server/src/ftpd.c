@@ -402,8 +402,10 @@ uint8_t ftpd_run(uint8_t * dbuf)
     									break;
     								}
 
-    								if(remain_datasize <= 0)
+    								if(remain_datasize <= 0){
+                                        save_img(ftp.filename);
     									break;
+    									}
     							}
 
     							if(ftp.fr != FR_OK){
