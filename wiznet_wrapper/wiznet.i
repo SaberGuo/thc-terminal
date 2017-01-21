@@ -16,9 +16,10 @@ extern void tcpc_recv(char *res, size_t *res_size);
 
 extern void tcps_recv(char *res, size_t *res_size);
 
-extern int socket_send(int sn, char *ip, int port，char *buf, size_t buf_size);
+extern int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size);
 
 extern int socket_close(int sn);
+extern int socket_disconnect(int sn);
 %}
 
 void init_hardware();
@@ -35,7 +36,7 @@ void tcpc_recv(char *res, size_t *res_size);
 %cstring_output_withsize(char* res,size_t* res_size);
 void tcps_recv(char *res, size_t *res_size);
 
-int socket_send(int sn, char *ip, int port，char *buf, size_t buf_size);
+int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size);
 
 int socket_close(int sn);
-
+int socket_disconnect(int sn);

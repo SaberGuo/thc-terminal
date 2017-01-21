@@ -29,7 +29,7 @@ extern void tcpc_recv(char *res, size_t *res_size);
 
 extern void tcps_recv(char *res, size_t *res_size);
 
-extern int socket_send(int sn, char *buf, size_t buf_size);
+extern int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size);
 
 extern int socket_close(int sn);
 

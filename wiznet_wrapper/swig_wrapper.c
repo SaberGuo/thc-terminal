@@ -27,10 +27,9 @@ void init_conf(char *ip, char *mask, char *gateway){
 		while (1);
 	}
     wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0x55, 0x66},
-        .ip = {192, 168, 1, 199},
+        .ip = {192, 168, 1, 105},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
-        .dns = {8, 8, 8, 8},
         .dhcp = NETINFO_STATIC };;
 
     if(WIZNET_ERROR == str_to_netarray(mWIZNETINFO.ip,4,ip))
@@ -61,10 +60,11 @@ char tcpc_buf[DATA_BUF_SIZE] = {0};
 int tcpc_buf_size = 0;
 int loopback_tcpc(int sn, char *ip, int port)
 {
-        printf("loopback_tcpc:ip-%s\n",ip );
+    char tmpip[20] = {0};
+    strcat(tmpip, ip);
 	uint8_t tcpc_ip[4]={0};
 	int tcpc_port = 1000;
-	str_to_netarray(tcpc_ip, 4, ip);
+	str_to_netarray(tcpc_ip, 4, tmpip);
 
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
@@ -93,7 +93,6 @@ int loopback_tcpc(int sn, char *ip, int port)
                 ret = srecv(sn, tcpc_buf, size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
 
                 if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
-                sentsize = 0;
 				tcpc_buf_size = size;
 				return 2; //got recv data
 
@@ -223,11 +222,13 @@ void tcps_recv(char *res, size_t *res_size){
 }
 
 
-int socket_send(int sn, char *ip, int port，char *buf, size_t buf_size)
+int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
 {
+    char tmpip[20] = {0};
+    strcat(tmpip, ip);
 	uint8_t tcpc_ip[4]={0};
 	int tcpc_port = 1000;
-	str_to_netarray(tcpc_ip, 4, ip);
+	str_to_netarray(tcpc_ip, 4, tmpip);
 
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
