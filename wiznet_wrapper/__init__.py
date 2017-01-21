@@ -34,9 +34,6 @@ def recv_data(sn,ip, port):
             res = wiz.tcpc_recv(1024)
             if res is not None and len(res)>0:
                 return res
-        count = count + 1
-        if count>20:
-            return None
 def send_data(sn,ip, port, chunk, length_chunk):
     count = 0
     while True:
