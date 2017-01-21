@@ -11,7 +11,7 @@ import os
 import json
 
 upload_count = 10
-tcpc_dst_url = "192.168.1.100"
+tcpc_dst_url = "123.57.60.239"
 tcpc_dst_port = 8000
 
 data_up_sn = 0

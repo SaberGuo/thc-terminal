@@ -83,7 +83,7 @@ class data_pool(object):
         pis = self.fetchall(sql)
         sum_pis = 0
         for pi in pis:
-            sum_pis+= pi[1]
+            sum_pis+= int(pi[1])
         #delete
         del_sql = "DELETE FROM {0}".format(self.pi_table_name)
         self.delete(del_sql,[])
