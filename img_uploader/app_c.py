@@ -23,6 +23,7 @@ jres = None
 def main_proc():
     p =socket.gethostbyname(tcpc_dst_url)
     if establish_connect(img_up_sn, p, tcpc_dst_port) == 0:
+        print "establish error, 26"
         return
     cf = config.get_instance()
     up_dict = {'device_id':cf.get_device_id(),
@@ -35,26 +36,40 @@ def main_proc():
         up_dict['size'] = get_file_size(img[2])
         up_dict['acquisition_time'] = img[0]
         jup_dict = json.dumps(up_dict)
+        print jup_dict
         if 0 == send_data(img_up_sn, p, tcpc_dst_port, jup_dict, len(jup_dict)):
+            print "error for send data, 39"
+            return
+        res = recv_data(img_up_sn, p, tcpc_dst_port)
+        if res == None:
+            print "recv error, 44"
+            return
+        jres = json.loads(res)
+        print jres
+        if not jres.has_key('method') or jres['method'] != "push_image_ready":
+            print "error for recv data, 46"
             return
         f = open(img[2],'rb')
         jres = None
         chunk_size = get_file_size(img[2])
         tmp_size = 0
-        for i in range(chunk_size/1024):
-            chunk = f.read(1024)
+        for i in range(chunk_size/512):
+            chunk = f.read(512)
             if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
+                print "error for send data, 55"
                 return
             tmp_size = tmp_size+len(chunk)
 
-        chunk = f.read(1024)
+        chunk = f.read(512)
         if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
+            print "error for send data, 61"
             return
         tmp_size = tmp_size+len(chunk)
         print "send data size:",tmp_size
 
         res = recv_data(img_up_sn,p, tcpc_dst_port)
         if res == None:
+            print "recv error, 70"
             return
         jres = json.loads(res)
         if jres.has_key('method') and jres['method'] == 'image_uploaded':
@@ -63,6 +78,7 @@ def main_proc():
     up_dict = {'device_id': cf.get_device_id(),
                 'method': 'close_connection'}
     if 0 == send_data(img_up_sn, p, tcpc_dst_port, json.dumps(up_dict),len(json.dumps(up_dict))):
+        print "send error, 79"
         return
      
 
