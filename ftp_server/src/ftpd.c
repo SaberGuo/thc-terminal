@@ -712,12 +712,12 @@ char proc_ftpd(char * buf)
 			slen = sprintf(sendbuf, "150 Opening data channel for file upload to server of \"%s\"\r\n", ftp.filename);
 			send(CTRL_SOCK, (uint8_t *)sendbuf, slen);
 			ftp.current_cmd = STOR_CMD;
-			if((ret = connect(DATA_SOCK, remote_ip.cVal, remote_port)) != SOCK_OK){
+			//if((ret = connect(DATA_SOCK, remote_ip.cVal, remote_port)) != SOCK_OK){
 #if defined(_FTP_DEBUG_)
-				printf("%d:Connect error\r\n", DATA_SOCK);
+			//	printf("%d:Connect error\r\n", DATA_SOCK);
 #endif
-				return ret;
-			}
+			//	return ret;
+			//}
    			connect_state_data = 0;
 			break;
 

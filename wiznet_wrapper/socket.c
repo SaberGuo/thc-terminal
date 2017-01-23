@@ -271,17 +271,17 @@ int8_t sconnect(uint8_t sn, uint8_t * addr, uint16_t port)
    //
 	
 	if(port == 0) return SOCKERR_PORTZERO;
-        uint8_t tmp_addr[4];
+       // uint8_t tmp_addr[4];
 	setSn_DIPR(sn,addr);
-        getSn_DIPR(sn,tmp_addr);
-        printf("addr: 0x%02x.0x%02x.0x%02x.0x%02x\n", tmp_addr[0],tmp_addr[1],tmp_addr[2],tmp_addr[3]);
+        //getSn_DIPR(sn,tmp_addr);
+        //printf("addr: 0x%02x.0x%02x.0x%02x.0x%02x\n", tmp_addr[0],tmp_addr[1],tmp_addr[2],tmp_addr[3]);
 	setSn_DPORT(sn,port);
-        uint16_t tmp_port = getSn_DPORT(sn);
-        printf("port: %d\n", tmp_port);
+        //uint16_t tmp_port = getSn_DPORT(sn);
+        //printf("port: %d\n", tmp_port);
 	setSn_CR(sn,Sn_CR_CONNECT);
    uint8_t cr = 0;
    while(cr = getSn_CR(sn));
-   printf("cr value: 0x%02x\n", cr);
+   //printf("cr value: 0x%02x\n", cr);
    if(sock_io_mode & (1<<sn)) return SOCK_BUSY;
    while(getSn_SR(sn) != SOCK_ESTABLISHED)
    {
