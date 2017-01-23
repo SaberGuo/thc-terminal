@@ -98,7 +98,7 @@ class uart_controller(object):
     def read_by_modbus(self, start_pos, value_num):
         command = uart_controller.form_read_command(1, 3, start_pos, value_num)
         hexer = uart_controller.int_array_to_string(command).decode("hex")
-        if config._is_debug:
+        if True:
             res_int = self.construct_debug_data()
             ans = uart_controller.int_array_to_string(res_int).decode("hex")
         else:

@@ -26,7 +26,7 @@ void init_conf(char *ip, char *mask, char *gateway){
 		printf("WIZCHIP Initialized fail.\r\n");
 		while (1);
 	}
-    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0x55, 0x66},
+    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0xef, 0x66},
         .ip = {192, 168, 1, 105},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
