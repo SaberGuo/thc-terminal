@@ -88,9 +88,11 @@ bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
     
 #ifdef FTPTEST
     uint8_t gftpbuf[_MAX_SS];
+    uint8_t res;
     ftpd_init(g_netinfo.ip);
     while(1){
-        ftpd_run(gftpbuf);
+        res = ftpd_run(gftpbuf);
+        if(res ==5) break;
     }
 #else
     uint8_t bufs[1024];
