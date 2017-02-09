@@ -22,13 +22,14 @@ FRESULT scan_files(char* path, char* buf, int * buf_len) {
 }
 
 void save_img(char* path){
-    char tmpstr[512] = "sudo python ../save_img.py \""
+    /*char tmpstr[512] = "sudo python ./save_img.py \""
+>>>>>>> terminal
     char* p = strstr(path,"jpg");
     if(p!=NULL){
         strcat(tmpstr, path);
         strcat(tmpstr, "\"");
         popen(tmpstr, "r");
-    }
+    }*/
 
 }
 int get_filesize(char* path, char *filename){

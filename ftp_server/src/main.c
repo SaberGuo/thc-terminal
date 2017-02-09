@@ -4,7 +4,7 @@
 #include "loopback.h"
 #include "wizchip_conf.h"
 #include "ftpd.h"
-//#define FTPTEST
+#define FTPTEST
 
 void cs_sel(){}
 void cs_desel(){}
@@ -84,13 +84,15 @@ bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
     
 
     
-    uint8_t dstip[4] = {123.57.60.239};
+    uint8_t dstip[4] = {123,57,60,239};
     
 #ifdef FTPTEST
     uint8_t gftpbuf[_MAX_SS];
+    uint8_t res;
     ftpd_init(g_netinfo.ip);
     while(1){
-        ftpd_run(gftpbuf);
+        res = ftpd_run(gftpbuf);
+        if(res ==5) break;
     }
 #else
     uint8_t bufs[1024];

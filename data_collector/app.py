@@ -15,10 +15,6 @@ from uart import uart_controller
 
 def main():
     #power on for dsp and ad
-    power_ctrl_init()
-    dsp_power_ctrl()
-    ad_power_ctrl()
-    timer_proc(200)
     #construct the database item
     uc = uart_controller.get_instance()
     uc.uart_open()
@@ -27,9 +23,6 @@ def main():
     data_str = build_msg(ads_v)
     dp = data_pool.get_instance()
     dp.save_data(int(time.time()),data_str)
-    #off the power
-    dsp_power_ctrl()
-    ad_power_ctrl()
 
 
 

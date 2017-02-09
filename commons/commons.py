@@ -12,14 +12,14 @@ import json
 
 upload_count = 10
 tcpc_dst_url = "123.57.60.239"
-tcpc_dst_port = 8000
+tcpc_dst_port = 7800
 
 data_up_sn = 0
 img_up_sn = 1
 config_download_sn = 2
 tcp_server_sn = 3
 
-self_ip = "192.168.1.199"
+self_ip = "192.168.1.119"
 self_mask = "255.255.255.0"
 self_gateway = "192.168.1.1"
 

@@ -22,7 +22,7 @@
 #endif
 
 #define F_APP_FTP
-//#define _FTP_DEBUG_
+#define _FTP_DEBUG_
 
 
 #define LINELEN		100
@@ -31,8 +31,8 @@
 #define _MAX_SS		512
 #endif
 
-#define CTRL_SOCK	2
-#define DATA_SOCK	3
+#define CTRL_SOCK       5	
+#define DATA_SOCK	6
 
 #define	IPPORT_FTPD	20	/* FTP Data port */
 #define	IPPORT_FTP	21	/* FTP Control port */

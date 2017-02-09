@@ -17,6 +17,7 @@ CAMERA_POWER_CTRL_GPIO = 23
 POWER_DRIVER_CTRL_GPIO_1 = 17
 POWER_DRIVER_CTRL_GPIO_2 = 27
 
+NET_RESET_CTRL_GPIO = 24
 
 ALARM_CTRL_GPIO = 21
 
@@ -31,11 +32,13 @@ def power_ctrl_init():
     gpio.setup(NET_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(CAMERA_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(ALARM_CTRL_GPIO, gpio.OUT)
+    gpio.setup(NET_RESET_CTRL_GPIO, gpio.OUT)
     gpio.output(DSP_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(AD_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(NET_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(CAMERA_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(ALARM_CTRL_GPIO, gpio.LOW)
+    gpio.output(NET_RESET_CTRL_GPIO, gpio.HIGH)
 
 def setup_driver():
     gpio.output(POWER_DRIVER_CTRL_GPIO_1, gpio.LOW)
@@ -63,9 +66,25 @@ def net_power_ctrl(action):
 def camera_power_ctrl(action):
     power_ctrl(CAMERA_POWER_CTRL_GPIO, action)
 
-
+def net_reset():
+    power_ctrl(NET_RESET_CTRL_GPIO, "on")
+    timer_proc(200)
+    power_ctrl(NET_RESET_CTRL_GPIO, "off")
+    timer_proc(200)
+    power_ctrl(NET_RESET_CTRL_GPIO, "on")
+    timer_proc(200)
 def alarm_on():
     gpio.output(ALARM_CTRL_GPIO, gpio.HIGH)
 
 def alarm_off():
     gpio.output(ALARM_CTRL_GPIO, gpio.LOW)
+
+if __name__ == "__main__":
+    
+    power_ctrl_init()
+    setup_driver()
+    net_power_ctrl("on")
+    timer_proc(200)
+    net_reset()
+    
+

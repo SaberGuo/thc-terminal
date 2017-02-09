@@ -404,6 +404,7 @@ uint8_t ftpd_run(uint8_t * dbuf)
 
     								if(remain_datasize <= 0){
                                         save_img(ftp.filename);
+                                        return 5;
     									break;
     									}
     							}
