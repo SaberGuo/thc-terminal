@@ -79,4 +79,12 @@ def alarm_on():
 def alarm_off():
     gpio.output(ALARM_CTRL_GPIO, gpio.LOW)
 
+if __name__ == "__main__":
+    
+    power_ctrl_init()
+    setup_driver()
+    net_power_ctrl("on")
+    timer_proc(200)
+    net_reset()
+    
 

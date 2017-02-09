@@ -4,7 +4,7 @@
 #include "loopback.h"
 #include "wizchip_conf.h"
 #include "ftpd.h"
-//#define FTPTEST
+#define FTPTEST
 
 void cs_sel(){}
 void cs_desel(){}
