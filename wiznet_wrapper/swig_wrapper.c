@@ -9,8 +9,12 @@
 #include <string.h>
 #include <stdint.h>
 #include "swig_wrapper.h"
-
+#include "dns.h"
 #include "rpi.h"
+
+const uint8_t dns[4] = {1,2,4,8};
+const uint8_t dns_bk[4] = {	210,2,,4,8};
+
 
 void init_hardware(){
     bcm2835_initlize();
@@ -30,6 +34,7 @@ void init_conf(char *ip, char *mask, char *gateway){
         .ip = {192, 168, 1, 105},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
+        .dns = {1,2,4,8},
         .dhcp = NETINFO_STATIC };;
 
     if(WIZNET_ERROR == str_to_netarray(mWIZNETINFO.ip,4,ip))
@@ -60,11 +65,17 @@ char tcpc_buf[DATA_BUF_SIZE] = {0};
 int tcpc_buf_size = 0;
 int loopback_tcpc(int sn, char *ip, int port)
 {
-    char tmpip[20] = {0};
-    strcat(tmpip, ip);
-	uint8_t tcpc_ip[4]={0};
-	int tcpc_port = 1000;
-	str_to_netarray(tcpc_ip, 4, tmpip);
+    uint8_t tcpc_ip[4]={0};
+    int tcpc_port = 1000;
+    int ret = 0;
+    if ((ret = DNS_run(dns, ip, tcpc_ip)) > 0)
+    {
+        printf("> 1st DNS Respond\r\n");
+    }
+    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
+    {
+        printf("> 2st DNS Respond\r\n");
+    }
 
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
@@ -224,11 +235,17 @@ void tcps_recv(char *res, size_t *res_size){
 
 int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
 {
-    char tmpip[20] = {0};
-    strcat(tmpip, ip);
-	uint8_t tcpc_ip[4]={0};
+    uint8_t tcpc_ip[4]={0};
+    int ret = 0;
+    if ((ret = DNS_run(dns, ip, tcpc_ip)) > 0)
+    {
+        printf("> 1st DNS Respond\r\n");
+    }
+    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
+    {
+        printf("> 2st DNS Respond\r\n");
+    }
 	int tcpc_port = 1000;
-	str_to_netarray(tcpc_ip, 4, tmpip);
 
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs

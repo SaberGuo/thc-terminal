@@ -8,5 +8,5 @@ ftp_server_name = 'ftp_server/'
 command='start.sh'
 
 
-cd ${base_root}${data_uploader_name}
+cd ${base_root}${ftp_server_name}
 sudo python app.py
