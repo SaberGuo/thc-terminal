@@ -13,7 +13,7 @@
 #include "rpi.h"
 
 const uint8_t dns[4] = {1,2,4,8};
-const uint8_t dns_bk[4] = {	210,2,,4,8};
+const uint8_t dns_bk[4] = {210,2,4,8};
 
 
 void init_hardware(){
@@ -78,7 +78,6 @@ int loopback_tcpc(int sn, char *ip, int port)
     }
 
     tcpc_port = port;
-    int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
     uint16_t any_port = 	50000;
 
@@ -248,7 +247,6 @@ int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
 	int tcpc_port = 1000;
 
     tcpc_port = port;
-    int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
     uint16_t any_port = 	50000;
 
