@@ -178,6 +178,17 @@ int loopback_tcps(int sn, int port)
 
 			if(ret <= 0) return ret;      // check SOCKERR_BUSY & SOCKERR_XXX. For showing the occurrence of SOCKERR_BUSY.
 			sentsize = 0;
+			while(size != sentsize)
+			{
+				ret = send(sn, tcps_buf+sentsize, size-sentsize);
+				if(ret < 0)
+				{
+					close(sn);
+					return ret;
+				}
+				sentsize += ret; // Don't care SOCKERR_BUSY, because it is zero.
+			}
+
 			tcps_buf_size = size;
 			return 2;
 
