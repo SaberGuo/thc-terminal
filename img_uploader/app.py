@@ -10,19 +10,15 @@ import conclude
 from commons.data_pool import data_pool
 from commons.conf import config
 from commons.gpio_ctrl import *
-import time
 import json
-import socket
 from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,img_up_sn, timer_proc
-import threading
 from wiznet_wrapper import *
-import sys
+import os
 
-jres = None
 
 
 def main_proc():
-    p =socket.gethostbyname(tcpc_dst_url)
+    p =tcpc_dst_url
     if establish_connect(img_up_sn, p, tcpc_dst_port) == 0:
         print "establish error, 26"
         return
@@ -76,6 +72,8 @@ def main_proc():
         if jres.has_key('method') and jres['method'] == 'image_uploaded':
             print "main_proc:image uploaded"
             #dp.del_img(img)
+            #os.remove(img[2])
+
     up_dict = {'device_id': cf.get_device_id(),
                 'method': 'close_connection'}
     if 0 == send_data(img_up_sn, p, tcpc_dst_port, json.dumps(up_dict),len(json.dumps(up_dict))):
