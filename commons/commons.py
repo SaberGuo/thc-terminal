@@ -17,12 +17,15 @@ tcpc_dst_port = 7800
 data_up_sn = 0
 img_up_sn = 1
 config_download_sn = 2
-tcp_server_sn = 3
+tcp_server_sn = 7
+tcp_server_port = 8000
 
 self_ip = "192.168.1.119"
 self_mask = "255.255.255.0"
 self_gateway = "192.168.1.1"
 
+
+max_count = 50000
 
 def timer_proc(interval_in_millisecond):
     loop_interval = 10      # 定时精度，也是循环间隔时间（毫秒），也是输出信息刷新间隔时间，它不能大于指定的最大延时时间，否则可能导致无任何输出
