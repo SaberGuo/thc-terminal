@@ -9,6 +9,7 @@
 import socket
 import commons.commons.tcp_server_port as server_port
 import commons.commons.self_ip as server_ip
+from commons.commons import check_json_format
 import sys, os
 import json
 
@@ -35,7 +36,7 @@ if __name__ == "__main__":
         jres = {'method':'update_config','content':''}
         f = open(sys.argv[2],'r')
         ct = f.readall()
-        try:
+        if check_json_format(ct):
             jct = json.loads(ct)
             print "config content is"
             print ct
@@ -54,7 +55,7 @@ if __name__ == "__main__":
                     break
                 print "input wrong"
 
-        except:
+        else:
             print "conf structure error!"
 
 

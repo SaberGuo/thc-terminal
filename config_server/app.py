@@ -11,6 +11,7 @@ from commons.conf import config
 from commons.gpio_ctrl import *
 import json
 from commons.commons import max_count,tcp_server_port,self_ip,self_mask,self_gateway,get_file_size,tcp_server_sn, timer_proc
+from commons.commons import check_json_format
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
 import os
@@ -35,12 +36,10 @@ def main_proc():
             res = wiz.tcps_recv(1024)
             if res is not None and len(res)>0:
                 is_connected = True
-                try:
+                if check_json_format(res):
                     jres = json.loads(res)
                     if jres.has_key('method') and jres.has_key('content'):
                         deal_method(jres)
-                except:
-                    pass
 
 
 
