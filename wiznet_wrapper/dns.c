@@ -524,9 +524,11 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
    
 	len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE);
 	ssize = ssendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
+#ifdef _DNS_DEBUG_
         printf("send msg to dns with name:%s,with len:%d:\n",name, ssize);
         for(i=0;i<len;i++){printf("%x,", pDNSMSG[i]);}
         printf("\r\n");
+#endif
 	while (1)
 	{
 		if ((len = getSn_RX_RSR(DNS_SOCKET)) > 0)
@@ -537,7 +539,9 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 	      printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
       #endif
          ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
+      #ifdef _DNS_DEBUG_
          printf("ip from dns is: %d.%d.%d.%d\n", ip_from_dns[0],ip_from_dns[1],ip_from_dns[2],ip_from_dns[3]);
+      #endif
 			break;
 		}
 		// Check Timeout
