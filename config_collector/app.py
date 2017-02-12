@@ -10,7 +10,7 @@ import conclude
 from commons.conf import config
 from commons.gpio_ctrl import *
 import json
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn
 import os
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
@@ -39,9 +39,10 @@ def deal_config(new_config):
 
 
 def main_proc():
-    p =tcpc_dst_url
+    p =gethostname(dns_sn, tcpc_dst_url)
     if establish_connect(config_download_sn, p, tcpc_dst_port) == 0:
         return
+    print "established!"
     cf = config.get_instance()
     up_dict = {'device_id': cf.get_device_id(),
                'method':'pull_param'}
