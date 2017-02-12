@@ -12,8 +12,8 @@
 #include "dns.h"
 #include "rpi.h"
 
-const uint8_t dns[4] = {1,2,4,8};
-const uint8_t dns_bk[4] = {210,2,4,8};
+uint8_t dns[4] = {192,168,1,1};
+uint8_t dns_bk[4] = {210,2,4,8};
 
 
 void init_hardware(){
@@ -34,7 +34,7 @@ void init_conf(char *ip, char *mask, char *gateway){
         .ip = {192, 168, 1, 105},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
-        .dns = {1,2,4,8},
+        .dns = {192,168,1,1},
         .dhcp = NETINFO_STATIC };;
 
     if(WIZNET_ERROR == str_to_netarray(mWIZNETINFO.ip,4,ip))
@@ -317,24 +317,29 @@ int socket_disconnect(int sn){
 uint8_t g_dns_buf[DATA_BUF_SIZE] = {0};
 uint8_t g_tcpip_str[20]= {0};
 int dns_host_to_ip(int sn, char *host){
+    printf("start dns serve\r\n");
     DNS_init(sn, g_dns_buf);
+    printf("started dns serve\r\n");
     uint8_t tcpc_ip[4]={0};
     int ret = 0;
     if ((ret = DNS_run(dns, host, tcpc_ip)) > 0)
     {
         printf("> 1st DNS Respond\r\n");
     }
-    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
+    else if ((ret != -1) && ((ret = DNS_run(dns_bk, host, tcpc_ip))>0))     // retry to 2nd DNS
     {
         printf("> 2st DNS Respond\r\n");
     }
     sprintf(g_tcpip_str, "%d.%d.%d.%d", tcpc_ip[0],tcpc_ip[1],tcpc_ip[2],tcpc_ip[3]);
+    printf("%s---%d.%d.%d.%d\n",g_tcpip_str, tcpc_ip[0],tcpc_ip[1],tcpc_ip[2],tcpc_ip[3]);
+    return ret;
 }
 
 void dns_get_ip(char *res, size_t *res_size){
      *res_size = strlen(g_tcpip_str);
+     printf("size for ip:%d\n", *res_size);
 	size_t i=0;
 	for(;i<*res_size;i++ ){
-        *res++ = tcps_buf[i];}
+        *res++ = g_tcpip_str[i];}
 	*res = 0;
 }

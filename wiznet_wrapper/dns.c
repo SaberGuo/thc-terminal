@@ -469,10 +469,16 @@ int16_t dns_makequery(uint16_t op, char * name, uint8_t * buf, uint16_t len)
  * Returns     : -1 - timeout occurred, 0 - timer over, but no timeout, 1 - no timer over, no timeout occur
  * Note        : timeout : retry count and timer both over.
  */
-
+uint32_t timeout_count =0;
+uint32_t max_timeout_count = 20000;
 int8_t check_DNS_timeout(void)
 {
 	static uint8_t retry_count;
+        timeout_count++;
+        if(timeout_count>max_timeout_count){
+            dns_1s_tick++;
+            timeout_count = 0;
+        }
 
 	if(dns_1s_tick >= DNS_WAIT_TIME)
 	{
@@ -506,27 +512,32 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 	uint8_t ip[4];
 	uint16_t len, port;
 	int8_t ret_check_timeout;
+        int i=0;
+        int32_t ssize;
    
    // Socket open
-   socket(DNS_SOCKET, Sn_MR_UDP, 0, 0);
+   ssocket(DNS_SOCKET, Sn_MR_UDP, 0, 0);
 
 #ifdef _DNS_DEBUG_
 	printf("> DNS Query to DNS Server : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
 #endif
    
 	len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE);
-	sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
-
+	ssize = ssendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
+        printf("send msg to dns with name:%s,with len:%d:\n",name, ssize);
+        for(i=0;i<len;i++){printf("%x,", pDNSMSG[i]);}
+        printf("\r\n");
 	while (1)
 	{
 		if ((len = getSn_RX_RSR(DNS_SOCKET)) > 0)
 		{
 			if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
-			len = recvfrom(DNS_SOCKET, pDNSMSG, len, ip, &port);
+			len = srecvfrom(DNS_SOCKET, pDNSMSG, len, ip, &port);
       #ifdef _DNS_DEBUG_
 	      printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
       #endif
          ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
+         printf("ip from dns is: %d.%d.%d.%d\n", ip_from_dns[0],ip_from_dns[1],ip_from_dns[2],ip_from_dns[3]);
 			break;
 		}
 		// Check Timeout
@@ -543,7 +554,7 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 #ifdef _DNS_DEBUG_
 			printf("> DNS Timeout\r\n");
 #endif
-			sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
+			ssize = sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
 		}
 	}
 	close(DNS_SOCKET);

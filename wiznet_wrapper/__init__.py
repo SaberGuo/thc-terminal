@@ -14,6 +14,13 @@ def init_tcpc(self_ip,self_mask,self_gateway):
     wiz.init_hardware()
     wiz.init_conf(self_ip, self_mask, self_gateway)
 
+def gethostname(sn, host):
+    ret = wiz.dns_host_to_ip(sn, host)
+    if ret>0:
+        return wiz.dns_get_ip(1024)
+    else:
+        print "dns parse failed!"
+        return ""
 def establish_connect(sn, ip, port):
     count = 0
     while True:
