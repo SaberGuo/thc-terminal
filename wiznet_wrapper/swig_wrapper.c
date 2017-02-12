@@ -76,7 +76,9 @@ int loopback_tcpc(int sn, char *ip, int port)
     {
         printf("> 2st DNS Respond\r\n");
     }
-
+    else{
+        printf("DNS is not respond\r\n");
+    }
     tcpc_port = port;
 	uint16_t size = 0;
     uint16_t any_port = 	50000;

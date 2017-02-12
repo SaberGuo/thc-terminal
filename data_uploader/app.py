@@ -20,6 +20,7 @@ import wiznet_wrapper.wiznet as wiz
 def main_proc():
     p =tcpc_dst_url
     if establish_connect(data_up_sn, p, tcpc_dst_port) == 0:
+        print "not established"
         return
     cf = config.get_instance()
     up_dict = {'device_id': cf.get_device_id(),

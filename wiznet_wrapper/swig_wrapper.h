@@ -25,6 +25,10 @@ extern int loopback_tcpc(int sn, char *ip, int port);
 
 extern int loopback_tcps(int sn, int port);
 
+extern int dns_host_to_ip(int sn, char *host);
+
+extern void dns_get_ip(char *res, size_t *res_size);
+
 extern void tcpc_recv(char *res, size_t *res_size);
 
 extern void tcps_recv(char *res, size_t *res_size);
