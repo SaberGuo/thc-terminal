@@ -13,11 +13,10 @@ import json
 upload_count = 10
 tcpc_dst_url = "123.57.60.239"
 tcpc_dst_port = 7800
-
+dns_sn = 6
 data_up_sn = 0
 img_up_sn = 1
 config_download_sn = 2
-dns_sn = 6
 tcp_server_sn = 7
 tcp_server_port = 8000
 

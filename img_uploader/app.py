@@ -27,7 +27,7 @@ def main_proc():
                'device_config_id':cf.get_device_config_id(),
                'method':'push_image'}
     dp = data_pool.get_instance()
-    imgs = dp.get_imgs(1)
+    imgs = dp.get_imgs(upload_count)
     for img in imgs:
         up_dict['key'] = img[1]
         up_dict['size'] = get_file_size(img[2])
