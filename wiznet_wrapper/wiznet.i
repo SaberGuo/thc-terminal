@@ -16,6 +16,10 @@ extern void tcpc_recv(char *res, size_t *res_size);
 
 extern void tcps_recv(char *res, size_t *res_size);
 
+extern int dns_host_to_ip(int sn, char *host);
+
+extern void dns_get_ip(char *res, size_t *res_size);
+
 extern int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size);
 
 extern int socket_close(int sn);
@@ -35,6 +39,11 @@ void tcpc_recv(char *res, size_t *res_size);
 
 %cstring_output_withsize(char* res,size_t* res_size);
 void tcps_recv(char *res, size_t *res_size);
+
+int dns_host_to_ip(int sn, char *host);
+
+%cstring_output_withsize(char* res,size_t* res_size);
+void dns_get_ip(char *res, size_t *res_size);
 
 int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size);
 

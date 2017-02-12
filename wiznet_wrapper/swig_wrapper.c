@@ -65,21 +65,14 @@ char tcpc_buf[DATA_BUF_SIZE] = {0};
 int tcpc_buf_size = 0;
 int loopback_tcpc(int sn, char *ip, int port)
 {
+    char tmpip[20] = {0};
+    strcat(tmpip, ip);
     uint8_t tcpc_ip[4]={0};
     int tcpc_port = 1000;
-    int ret = 0;
-    if ((ret = DNS_run(dns, ip, tcpc_ip)) > 0)
-    {
-        printf("> 1st DNS Respond\r\n");
-    }
-    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
-    {
-        printf("> 2st DNS Respond\r\n");
-    }
-    else{
-        printf("DNS is not respond\r\n");
-    }
+	str_to_netarray(tcpc_ip, 4, tmpip);
+
     tcpc_port = port;
+    int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
     uint16_t any_port = 	50000;
 
@@ -247,19 +240,14 @@ void tcps_recv(char *res, size_t *res_size){
 
 int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
 {
-    uint8_t tcpc_ip[4]={0};
-    int ret = 0;
-    if ((ret = DNS_run(dns, ip, tcpc_ip)) > 0)
-    {
-        printf("> 1st DNS Respond\r\n");
-    }
-    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
-    {
-        printf("> 2st DNS Respond\r\n");
-    }
+    char tmpip[20] = {0};
+    strcat(tmpip, ip);
+	uint8_t tcpc_ip[4]={0};
 	int tcpc_port = 1000;
+	str_to_netarray(tcpc_ip, 4, tmpip);
 
     tcpc_port = port;
+    int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
     uint16_t any_port = 	50000;
 
@@ -324,4 +312,29 @@ int socket_close(int sn){
 
 int socket_disconnect(int sn){
     return sdisconnect(sn);
+}
+
+uint8_t g_dns_buf[DATA_BUF_SIZE] = {0};
+uint8_t g_tcpip_str[20]= {0};
+int dns_host_to_ip(int sn, char *host){
+    DNS_init(sn, g_dns_buf);
+    uint8_t tcpc_ip[4]={0};
+    int ret = 0;
+    if ((ret = DNS_run(dns, host, tcpc_ip)) > 0)
+    {
+        printf("> 1st DNS Respond\r\n");
+    }
+    else if ((ret != -1) && ((ret = DNS_run(dns_bk, ip, tcpc_ip))>0))     // retry to 2nd DNS
+    {
+        printf("> 2st DNS Respond\r\n");
+    }
+    sprintf(g_tcpip_str, "%d.%d.%d.%d", tcpc_ip[0],tcpc_ip[1],tcpc_ip[2],tcpc_ip[3]);
+}
+
+void dns_get_ip(char *res, size_t *res_size){
+     *res_size = strlen(g_tcpip_str);
+	size_t i=0;
+	for(;i<*res_size;i++ ){
+        *res++ = tcps_buf[i];}
+	*res = 0;
 }
