@@ -12,7 +12,7 @@
 #include "dns.h"
 #include "rpi.h"
 
-uint8_t dns[4] = {192,168,1,1};
+uint8_t dns[4] = {1,2,4,8};
 uint8_t dns_bk[4] = {210,2,4,8};
 
 
@@ -36,6 +36,10 @@ void init_conf(char *ip, char *mask, char *gateway){
         .gw = {192, 168, 1, 1},
         .dns = {192,168,1,1},
         .dhcp = NETINFO_STATIC };;
+    wiz_NetTimeout mWIZNETTIMEOUT = {.retry_cnt = 5, .time_100us = 1000};
+    wizchip_settimeout(&mWIZNETTIMEOUT);
+    wizchip_gettimeout(&mWIZNETTIMEOUT);
+    printf("retry cnt is : %d, time uint is : %d(100us)\n", mWIZNETTIMEOUT.retry_cnt, mWIZNETTIMEOUT.time_100us);
 
     if(WIZNET_ERROR == str_to_netarray(mWIZNETINFO.ip,4,ip))
     {

@@ -10,8 +10,9 @@ import time
 import os
 import json
 
-upload_count = 10
-tcpc_dst_url = "123.57.60.239"
+upload_count = 1
+#tcpc_dst_url = "123.57.60.239"
+tcpc_dst_url = "env.thcreate.com"
 tcpc_dst_port = 7800
 dns_sn = 6
 data_up_sn = 0
@@ -20,12 +21,13 @@ config_download_sn = 2
 tcp_server_sn = 7
 tcp_server_port = 8000
 
-self_ip = "192.168.1.119"
+self_ip = "192.168.1.199"
 self_mask = "255.255.255.0"
 self_gateway = "192.168.1.1"
 
-
+flock_part = "flock -xn /tmp/wiznet.lock -c "
 max_count = 50000
+once_send_size = 1024
 
 def timer_proc(interval_in_millisecond):
     loop_interval = 10      # 定时精度，也是循环间隔时间（毫秒），也是输出信息刷新间隔时间，它不能大于指定的最大延时时间，否则可能导致无任何输出

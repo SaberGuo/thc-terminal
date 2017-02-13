@@ -19,7 +19,7 @@ POWER_DRIVER_CTRL_GPIO_2 = 27
 
 NET_RESET_CTRL_GPIO = 24
 
-ALARM_CTRL_GPIO = 21
+ALARM_CTRL_GPIO = 22
 
 TIME_FOR_RELAYER = 210
 
@@ -81,10 +81,10 @@ def alarm_off():
 
 if __name__ == "__main__":
     
-    power_ctrl_init()
-    setup_driver()
-    net_power_ctrl("on")
-    timer_proc(200)
-    net_reset()
-    
+    #power_ctrl_init()
+    #setup_driver()
+    #net_power_ctrl("on")
+    alarm_on() 
+    timer_proc(2000)
+    alarm_off()
 

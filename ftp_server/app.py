@@ -5,7 +5,7 @@
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/2/9
 """
-
+import conclude
 from commons.gpio_ctrl import *
 import os
 

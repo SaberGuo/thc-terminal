@@ -10,29 +10,32 @@ import conclude
 from commons.conf import config
 from commons.gpio_ctrl import *
 import json
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part
 import os
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
 
-crontab_dict = {'img_capture_invl': 'python app.py #img_capture_invl',
-                'img_upload_invl':'python app.py #img_upload_invl',
-                'data_capture_invl':'python app.py #data_capture_invl',
-                'data_upload_invl':'python app.py #data_upload_invl'}
+crontab_dict = {'img_capture_invl': flock_part + '\"/home/pi/thc-terminal/ftp_server/start.sh\" #img_capture_invl',
+                'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_uploader/start.sh\" #img_upload_invl',
+                'data_capture_invl':flock_part + '\"/home/pi/thc-terminal/data_collector/start.sh\" #data_capture_invl',
+                'data_upload_invl':flock_part + '\"/home/pi/thc-terminal/data_uploader/start.sh\" #data_upload_invl'}
 def deal_single_crontab(key, value):
     if config._is_debug:
         print "deal single crontab:{0},{1},{2}".format(key, value, crontab_dict[key])
     else:
-        os.system('./change_single_crontab.sh "{0}" "{1} {2}"'.key, value, crontab_dict[key])
+        os.system('./change_single_crontab.sh "{0}" "{1} {2}"'.format(key, value, crontab_dict[key]))
 
 def deal_crontab(new_control, old_control):
     try:
         for key,value in new_control.items():
-            if value !=old_control[key]:
+            #if old_control.has_key(key) and value !=old_control[key]:
+            if old_control.has_key(key):
+                print "key is:",key
+                print "value is: ",value
                 deal_single_crontab(key,value)
-    except:
-        print "error for deal_crontab"
-    os.system("sudo /etc/init.d/cron restart")
+        #os.system("sudo /etc/init.d/cron restart")
+    except Exception as e:
+        print "error for deal_crontab:",e
 
 def deal_config(new_config):
     config.get_instance().update_config(new_config)

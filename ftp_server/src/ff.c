@@ -17,19 +17,20 @@ FRESULT scan_files(char* path, char* buf, int * buf_len) {
     fp=popen(tmpstr,"r");
     *buf_len=ftell(fp);
     fread(buf,1,*buf_len,fp);
+    pclose(fp);
     return FR_OK;
 
 }
 
 void save_img(char* path){
-    char tmpstr[512] = "sudo python ./save_img.py \""
+    char tmpstr[512] = "sudo python ./save_img.py \"";
     char* p = strstr(path,"jpg");
     if(p!=NULL){
         strcat(tmpstr, path);
         strcat(tmpstr, "\"");
-        popen(tmpstr, "r");
+        printf(tmpstr);
+        system(tmpstr);
     }
-
 }
 int get_filesize(char* path, char *filename){
     uint32_t path_len = strlen(path);

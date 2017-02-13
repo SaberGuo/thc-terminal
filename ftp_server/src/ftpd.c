@@ -386,12 +386,12 @@ uint8_t ftpd_run(uint8_t * dbuf)
 
     								ret = recv(DATA_SOCK, dbuf, recv_byte);
 #if defined(_FTP_DEBUG_)
-    								//printf("----->fn:%s data:%s \r\n", ftp.filename, dbuf);
+    							//	printf("----->fn:%s data:%s \r\n", ftp.filename, dbuf);
 #endif
 
     								ftp.fr = f_write(ftp.fil, dbuf, (UINT)ret, &blocklen);
 #if defined(_FTP_DEBUG_)
-    								//printf("----->dsize:%d recv:%d len:%d \r\n", remain_datasize, ret, blocklen);
+    								printf("----->dsize:%d recv:%d len:%d \r\n", remain_datasize, ret, blocklen);
 #endif
     								remain_datasize -= blocklen;
 
@@ -403,8 +403,7 @@ uint8_t ftpd_run(uint8_t * dbuf)
     								}
 
     								if(remain_datasize <= 0){
-                                        save_img(ftp.filename);
-                                        return 5;
+                                        //return 5;
     									break;
     									}
     							}
@@ -428,6 +427,8 @@ uint8_t ftpd_run(uint8_t * dbuf)
     					printf("\r\nFile write finished\r\n");
 #endif
     					ftp.fr = f_close(ftp.fil);
+                                        save_img(ftp.filename);
+                                        return 5;
     				}else{
 #if defined(_FTP_DEBUG_)
     					printf("File Open Error: %d\r\n", ftp.fr);

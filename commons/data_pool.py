@@ -145,10 +145,8 @@ class data_pool(object):
                     self.conn.commit()
 if __name__ == "__main__":
     dp = data_pool.get_instance()
-    print dp.get_data(5)
-    dp.close_all()
-    print dp.get_imgs(5)
-    dp.del_img(dp.get_imgs(5))
-    print dp.get_imgs(5)
+    imgs = dp.get_imgs(5)
+    print imgs
+    #dp.del_img(imgs)
     
     

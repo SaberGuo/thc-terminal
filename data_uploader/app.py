@@ -19,7 +19,9 @@ import wiznet_wrapper.wiznet as wiz
 
 def main_proc():
     p =gethostname(dns_sn, tcpc_dst_url)
-    
+    if len(p)==0:
+        return
+    #p = tcpc_dst_url    
     if establish_connect(data_up_sn, p, tcpc_dst_port) == 0:
         print "not established"
         return
@@ -54,12 +56,16 @@ def main_proc():
      
 
 if __name__ == "__main__":
+    timer_proc(10000)
     power_ctrl_init()
     setup_driver()
     net_power_ctrl("on")
     timer_proc(200)
     net_reset()
+    timer_proc(200)
     init_tcpc(self_ip, self_mask, self_gateway)
+    timer_proc(200)
     main_proc()
     net_power_ctrl("off")
+    timer_proc(200)
     setdown_driver()
