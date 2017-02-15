@@ -3,24 +3,98 @@
 """
   @author: xiao guo
   @contact: guoxiao@buaa.edu.cn
-  @date: 2017/1/11
+  @date: 2017/2/9
 """
-
 import conclude
-from commons.gpio_ctrl import power_ctrl_init,camera_power_ctrl,alarm_on,alarm_off
-from commons.commons import timer_proc
+from commons.gpio_ctrl import *
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,img_up_sn, timer_proc,dns_sn,once_send_size
+from wiznet_wrapper import *
+from commons.data_pool import data_pool
+from commons.conf import config
+import json
+import os
 
+
+def main_proc():
+    p =gethostname(dns_sn, tcpc_dst_url)
+    if len(p)==0:
+        print "exit for main proc"
+        return
+    if establish_connect(img_up_sn, p, tcpc_dst_port) == 0:
+        print "establish error, 26"
+        return
+    cf = config.get_instance()
+    up_dict = {'device_id':cf.get_device_id(),
+               'device_config_id':cf.get_device_config_id(),
+               'method':'push_image'}
+    dp = data_pool.get_instance()
+    imgs = dp.get_imgs(upload_count)
+    for img in imgs:
+        up_dict['key'] = img[1]
+        up_dict['size'] = get_file_size(img[2])
+        up_dict['acquisition_time'] = img[0]
+        jup_dict = json.dumps(up_dict)
+        print jup_dict
+        if 0 == send_data(img_up_sn, p, tcpc_dst_port, jup_dict, len(jup_dict)):
+            print "error for send data, 39"
+            return
+        res = recv_data(img_up_sn, p, tcpc_dst_port)
+        if res == None:
+            print "recv error, 44"
+            return
+        jres = json.loads(res)
+        print jres
+        if not jres.has_key('method') or jres['method'] != "push_image_ready":
+            print "error for recv data, 46"
+            return
+        f = open(img[2],'rb')
+        jres = None
+        chunk_size = get_file_size(img[2])
+        tmp_size = 0
+        for i in range(chunk_size/once_send_size):
+            chunk = f.read(once_send_size)
+            if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
+                print "error for send data, 55"
+                return
+            tmp_size = tmp_size+len(chunk)
+
+        chunk = f.read(once_send_size)
+        if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
+            print "error for send data, 61"
+            return
+        tmp_size = tmp_size+len(chunk)
+        print "send data size:",tmp_size
+
+        res = recv_data(img_up_sn,p, tcpc_dst_port)
+        if res == None:
+            print "recv error, 70"
+            return
+        jres = json.loads(res)
+        if jres.has_key('method') and jres['method'] == 'image_uploaded':
+            print "main_proc:image uploaded"
+            dp.del_img(img)
+            os.remove(img[2])
+
+    up_dict = {'device_id': cf.get_device_id(),
+                'method': 'close_connection'}
+    if 0 == send_data(img_up_sn, p, tcpc_dst_port, json.dumps(up_dict),len(json.dumps(up_dict))):
+        print "send error, 79"
+        return
 
 if __name__ == "__main__":
-    #camera power on and wait for the while
     power_ctrl_init()
-    camera_power_ctrl()
+    setup_driver()
+    out_power_ctrl("on")
     timer_proc(40000)
-    #alarm set
+    net_power_ctrl("on")
+    timer_proc(200)
+    net_reset()
     alarm_on()
-    timer_proc(1000)
+    os.system("sudo ./build/img_collector") #save img
     alarm_off()
-    #wait for while
-    timer_proc(10000)
-    #camera power off
-    camera_power_ctrl()
+    timer_proc(200)
+    main_proc() #upload img
+    net_power_ctrl("off")
+    out_power_ctrl("off")
+    setdown_driver()
+

@@ -12,7 +12,7 @@ from commons import timer_proc
 DSP_POWER_CTRL_GPIO = 13
 AD_POWER_CTRL_GPIO = 17
 NET_POWER_CTRL_GPIO = 6
-CAMERA_POWER_CTRL_GPIO = 23
+OUT_POWER_CTRL_GPIO = 26
 
 POWER_DRIVER_CTRL_GPIO_1 = 17
 POWER_DRIVER_CTRL_GPIO_2 = 27
@@ -30,13 +30,13 @@ def power_ctrl_init():
     gpio.setup(DSP_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(AD_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(NET_POWER_CTRL_GPIO, gpio.OUT)
-    gpio.setup(CAMERA_POWER_CTRL_GPIO, gpio.OUT)
+    gpio.setup(OUT_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(ALARM_CTRL_GPIO, gpio.OUT)
     gpio.setup(NET_RESET_CTRL_GPIO, gpio.OUT)
     gpio.output(DSP_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(AD_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(NET_POWER_CTRL_GPIO, gpio.LOW)
-    gpio.output(CAMERA_POWER_CTRL_GPIO, gpio.LOW)
+    gpio.output(OUT_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(ALARM_CTRL_GPIO, gpio.LOW)
     gpio.output(NET_RESET_CTRL_GPIO, gpio.HIGH)
 
@@ -63,8 +63,8 @@ def ad_power_ctrl(action):
 def net_power_ctrl(action):
     power_ctrl(NET_POWER_CTRL_GPIO, action)
 
-def camera_power_ctrl(action):
-    power_ctrl(CAMERA_POWER_CTRL_GPIO, action)
+def out_power_ctrl(action):
+    power_ctrl(OUT_POWER_CTRL_GPIO, action)
 
 def net_reset():
     power_ctrl(NET_RESET_CTRL_GPIO, "on")

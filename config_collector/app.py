@@ -15,8 +15,8 @@ import os
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
 
-crontab_dict = {'img_capture_invl': flock_part + '\"/home/pi/thc-terminal/ftp_server/start.sh\" #img_capture_invl',
-                'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_uploader/start.sh\" #img_upload_invl',
+crontab_dict = {'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_collector/start.sh\" #img_capture_invl',
+                #'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_uploader/start.sh\" #img_upload_invl',
                 'data_capture_invl':flock_part + '\"/home/pi/thc-terminal/data_collector/start.sh\" #data_capture_invl',
                 'data_upload_invl':flock_part + '\"/home/pi/thc-terminal/data_uploader/start.sh\" #data_upload_invl'}
 def deal_single_crontab(key, value):
@@ -80,10 +80,13 @@ def main_proc():
 if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
+    out_power_ctrl("on")
+    timer_proc(60000)
     net_power_ctrl("on")
     timer_proc(200)
     net_reset()
     init_tcpc(self_ip, self_mask, self_gateway)
     main_proc()
     net_power_ctrl("off")
+    out_power_ctrl("off")
     setdown_driver()

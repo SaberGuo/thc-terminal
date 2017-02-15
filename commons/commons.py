@@ -10,7 +10,7 @@ import time
 import os
 import json
 
-upload_count = 1
+upload_count = 2
 #tcpc_dst_url = "123.57.60.239"
 tcpc_dst_url = "env.thcreate.com"
 tcpc_dst_port = 7800

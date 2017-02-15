@@ -1,1 +1,0 @@
-#thc-terminal local server 
