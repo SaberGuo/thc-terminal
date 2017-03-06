@@ -5,6 +5,7 @@
 #include "wizchip_conf.h"
 #include "ftpd.h"
 #define FTPTEST
+#define MAX_RUN_COUNT  500000
 
 void cs_sel(){}
 void cs_desel(){}
@@ -43,7 +44,7 @@ int main(int argc, char **argv){
 bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
 bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
-bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
+bcm2835_spi_chipSelect(BCM2835_SPI_CS1);
 bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
     wiz_NetInfo g_netinfo;
     g_netinfo.mac[0] = 0x0c;
@@ -89,8 +90,14 @@ bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
 #ifdef FTPTEST
     uint8_t gftpbuf[_MAX_SS];
     uint8_t res;
+    uint32_t run_count = 0;
     ftpd_init(g_netinfo.ip);
     while(1){
+        if(0 == is_connected())
+           run_count++;
+        else
+            run_count = 0;
+        if(run_count>MAX_RUN_COUNT) break;
         res = ftpd_run(gftpbuf);
         if(res ==5) break;
     }

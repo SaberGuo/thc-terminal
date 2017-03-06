@@ -9,6 +9,7 @@ import conclude
 from commons.gpio_ctrl import *
 from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,img_up_sn, timer_proc,dns_sn,once_send_size
 from wiznet_wrapper import *
+from wiznet_wrapper import wiznet as wiz 
 from commons.data_pool import data_pool
 from commons.conf import config
 import json
@@ -16,10 +17,14 @@ import os
 
 
 def main_proc():
-    p =gethostname(dns_sn, tcpc_dst_url)
-    if len(p)==0:
-        print "exit for main proc"
-        return
+    print "start img upload"
+    print dns_sn, tcpc_dst_url
+    #p =gethostname(dns_sn, tcpc_dst_url)
+    #print dns_sn, tcpc_dst_url
+    #if len(p)==0:
+    #    print "exit for main proc"
+    #    return
+    p = tcpc_dst_url
     if establish_connect(img_up_sn, p, tcpc_dst_port) == 0:
         print "establish error, 26"
         return
@@ -72,11 +77,12 @@ def main_proc():
         jres = json.loads(res)
         if jres.has_key('method') and jres['method'] == 'image_uploaded':
             print "main_proc:image uploaded"
-            dp.del_img(img)
+            dp.del_img([img])
             os.remove(img[2])
 
     up_dict = {'device_id': cf.get_device_id(),
                 'method': 'close_connection'}
+    print up_dict
     if 0 == send_data(img_up_sn, p, tcpc_dst_port, json.dumps(up_dict),len(json.dumps(up_dict))):
         print "send error, 79"
         return
@@ -85,15 +91,22 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    timer_proc(40000)
+    timer_proc(60000)
     net_power_ctrl("on")
     timer_proc(200)
     net_reset()
+    timer_proc(1000)
     alarm_on()
-    os.system("sudo ./build/img_collector") #save img
+    os.system("./img_col.sh") #save img
+    #print "img collected\n\n\n"
     alarm_off()
-    timer_proc(200)
+    timer_proc(1000)
+    net_reset()
+    timer_proc(2000)
+    init_tcpc(self_ip, self_mask, self_gateway)
+    timer_proc(2000)
     main_proc() #upload img
+    timer_proc(2000)
     net_power_ctrl("off")
     out_power_ctrl("off")
     setdown_driver()

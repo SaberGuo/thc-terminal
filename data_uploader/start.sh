@@ -9,4 +9,4 @@ command='start.sh'
 
 
 cd ${base_root}${data_uploader_name}
-sudo python app.py
+flock -e -w100 /tmp/wiznet.lock -c "echo 'data uploader!';sudo python app.py"

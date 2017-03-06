@@ -125,7 +125,9 @@ int fsprintf(uint8_t s, const char *format, ...)
 */
 	return i;
 }
-
+int is_connected(){
+    return connect_state_control;
+}
 void ftpd_init(uint8_t * src_ip)
 {
 	ftp.state = FTPS_NOT_LOGIN;
@@ -391,7 +393,7 @@ uint8_t ftpd_run(uint8_t * dbuf)
 
     								ftp.fr = f_write(ftp.fil, dbuf, (UINT)ret, &blocklen);
 #if defined(_FTP_DEBUG_)
-    								printf("----->dsize:%d recv:%d len:%d \r\n", remain_datasize, ret, blocklen);
+    								//printf("----->dsize:%d recv:%d len:%d \r\n", remain_datasize, ret, blocklen);
 #endif
     								remain_datasize -= blocklen;
 
@@ -451,7 +453,7 @@ uint8_t ftpd_run(uint8_t * dbuf)
 
 								ret = recv(DATA_SOCK, dbuf, recv_byte);
 
-								printf("########## dbuf:%s\r\n", dbuf);
+								//printf("########## dbuf:%s\r\n", dbuf);
 
 								remain_datasize -= ret;
 

@@ -11,8 +11,8 @@ import json
 class config(object):
     conf_file_path = "../data/config.json"
     instance = None
-    min_s = 4000.0
-    max_s = 65535.0
+    min_s = 4.0
+    max_s = 20.0
     _is_debug = False 
     _is_local = False
     _debug_ip = "192.168.1.100"
@@ -41,15 +41,28 @@ class config(object):
         self.cf.write(str_conf)
         self.cf.flush()
         self.cf.close()
-
+    def get_device_data(self, device_type, value_i):
+        try:
+            return getattr(self,device_type)(value)
+        except:
+            return 0
     def parse_numeric_data(self, value, port):
         for data_key, data_item in self.data_config.items():
             if data_item['port'] == port:
-                max_v = data_item['max_v']
-                min_v = data_item['min_v']
-                res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
+                device_type = data_item['device_type']
+                res = self.get_device_data(self, device_type, value)
+                
+                #max_v = data_item['max_v']
+                #min_v = data_item['min_v']
+                #res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
                 return (data_key, res)
         return (None,None)
+    
+    def get_port_key(self, port):
+        for data_key, data_item in self.data_config.items():
+            if data_item['port'] == port:
+                return data_key
+        return None
 
     def get_ctrl_val(self, key):
         if key in self.ctrl_config.keys():
@@ -71,5 +84,10 @@ class config(object):
 
     def get_data_upload_invl(self):
         return self.get_ctrl_val('data_upload_invl')
+    #for device_type methods
+    def soilmt_yx_r1_i(self, value):
+        pass
 
-
+if __name__ == "__main__":
+    cf = config.get_instance().get_port_key("Img1")
+    print cf

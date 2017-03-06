@@ -10,19 +10,23 @@ import serial
 import struct
 from random import randint
 from commons.conf import config
+import time
 
 class uart_controller(object):
     start_pos = 3
     instance = None
     uart_sign = '/dev/ttyAMA0'
     uart_baud = 9600
-    uart_timeout = 0.5
-
-    ad_start_pos = [{ 'start_pos':0x10, 'value_num':4},
-                    { 'start_pos':0x20, 'value_num':4},
-                    { 'start_pos':0x30, 'value_num':4}]
+    uart_timeout =1 
+    
+    #ad_start_pos = [{ 'start_pos':0x10, 'value_num':4},
+    #                { 'start_pos':0x20, 'value_num':4},
+    #                { 'start_pos':0x30, 'value_num':4}]
+    
+    ad_start_pos = [{ 'start_pos':0x10, 'value_num':4,'frame_num':3},]
     def __init__(self):
         self.ser = serial.Serial(self.uart_sign, self.uart_baud, timeout=self.uart_timeout)
+        #self.ser = serial.Serial(self.uart_sign, self.uart_baud)
 
     @staticmethod
     def get_instance():
@@ -94,11 +98,15 @@ class uart_controller(object):
     @classmethod
     def bytes_to_ushort(cls, buf, offset):
         return struct.unpack_from(">H", buf, offset)[0]
+    @classmethod
+    def bytes_to_int(cls, buf, offset):
+        return struct.unpack_from(">B", buf, offset)[0]
 
     def read_by_modbus(self, start_pos, value_num):
         command = uart_controller.form_read_command(1, 3, start_pos, value_num)
+        print command
         hexer = uart_controller.int_array_to_string(command).decode("hex")
-        if True:
+        if False:
             res_int = self.construct_debug_data()
             ans = uart_controller.int_array_to_string(res_int).decode("hex")
         else:
@@ -110,13 +118,26 @@ class uart_controller(object):
         for i in range(10):
             res_int.append(randint(0,255))
         return res_int
-
+    def construct_single_ad(self, value):
+        current = (value-150.0)/4096.0*3*1.757/249*1000
+        return current
     def read_ad_values(self):
         res = []
         for conf in self.ad_start_pos:
             ans = self.read_by_modbus(conf['start_pos'], conf['value_num'])
-            for i in range(conf['value_num']):
-                res.append(uart_controller.bytes_to_ushort(ans,self.start_pos+i*2))
+            print len(ans)
+            test_ans = []
+            for k in range(len(ans)):
+                 test_ans.append(uart_controller.bytes_to_int(ans,k))
+            print test_ans
+            try:
+                for j in range(conf['frame_num']):
+                    for i in range(conf['value_num']):
+                        iv = uart_controller.bytes_to_ushort(ans,j*13+self.start_pos+i*2)
+                        iv = self.construct_single_ad(iv)
+                        res.append(iv)
+            except Exception as e:
+                print e,res
 
         return res
 
@@ -124,4 +145,5 @@ class uart_controller(object):
 if __name__ == "__main__":
     ut = uart_controller.get_instance()
     ut.uart_open()
-    print "read res:", ut.read_ad_values()
+    rtt = ut.read_ad_values()
+    print "read res:", rtt

@@ -140,6 +140,8 @@ int recvit(char * command);
 long sendfile(uint8_t s, char * command);
 long recvfile(uint8_t s);
 
+int is_connected();
+
 #if defined(F_FILESYSTEM)
 void print_filedsc(FILE *fil);
 #endif

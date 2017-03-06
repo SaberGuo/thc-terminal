@@ -12,13 +12,13 @@ from commons.gpio_ctrl import *
 import json
 from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part
 import os
+import time
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
 
-crontab_dict = {'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_collector/start.sh\" #img_capture_invl',
-                #'img_upload_invl': flock_part + '\"/home/pi/thc-terminal/img_uploader/start.sh\" #img_upload_invl',
-                'data_capture_invl':flock_part + '\"/home/pi/thc-terminal/data_collector/start.sh\" #data_capture_invl',
-                'data_upload_invl':flock_part + '\"/home/pi/thc-terminal/data_uploader/start.sh\" #data_upload_invl'}
+crontab_dict = {'img_collector_invl': '\"/home/pi/thc-terminal/img_collector/start.sh\" #img_collector_invl',
+                'data_capture_invl': '\"/home/pi/thc-terminal/data_collector/start.sh\" #data_capture_invl',
+                'data_upload_invl':'\"/home/pi/thc-terminal/data_uploader/start.sh\" #data_upload_invl'}
 def deal_single_crontab(key, value):
     if config._is_debug:
         print "deal single crontab:{0},{1},{2}".format(key, value, crontab_dict[key])
@@ -29,20 +29,28 @@ def deal_crontab(new_control, old_control):
     try:
         for key,value in new_control.items():
             #if old_control.has_key(key) and value !=old_control[key]:
-            if old_control.has_key(key):
+            if old_control.has_key(key) and crontab_dict.has_key(key):
                 print "key is:",key
                 print "value is: ",value
                 deal_single_crontab(key,value)
-        #os.system("sudo /etc/init.d/cron restart")
+        os.system("sudo /etc/init.d/cron restart")
     except Exception as e:
         print "error for deal_crontab:",e
 
 def deal_config(new_config):
     config.get_instance().update_config(new_config)
 
+def deal_systime(ts):
+    lts = time.localtime(int(ts))
+    cmd  = "sudo date -s \"{2}-{1}-{0} {3}:{4}:{5}\"".format(lts.tm_mday, lts.tm_mon, lts.tm_year, lts.tm_hour, lts.tm_min, lts.tm_sec)
+    print cmd
+    os.system(cmd)
 
 def main_proc():
-    p =gethostname(dns_sn, tcpc_dst_url)
+    #p =gethostname(dns_sn, tcpc_dst_url)
+    p = tcpc_dst_url
+    if len(p) == 0:
+        return
     if establish_connect(config_download_sn, p, tcpc_dst_port) == 0:
         return
     print "established!"
@@ -65,6 +73,7 @@ def main_proc():
                 and jres.has_key("method") and jres['method'] == 'push_param'\
                 and jres.has_key("config")\
                 and jres.has_key("control"):
+            deal_systime(jres['ts'])
             deal_config(jres)
             deal_crontab(jres['control'], cf.ctrl_config)
             up_dict = {'device_id': cf.get_device_id(),
@@ -81,12 +90,17 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    timer_proc(60000)
+    #timer_proc(72000)
+    timer_proc(7200)
     net_power_ctrl("on")
-    timer_proc(200)
+    timer_proc(1000)
     net_reset()
+    timer_proc(1000)
     init_tcpc(self_ip, self_mask, self_gateway)
+    timer_proc(1000)
     main_proc()
+    timer_proc(1000)
     net_power_ctrl("off")
     out_power_ctrl("off")
+
     setdown_driver()

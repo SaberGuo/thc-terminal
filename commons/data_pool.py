@@ -85,8 +85,8 @@ class data_pool(object):
         for pi in pis:
             sum_pis+= int(pi[1])
         #delete
-        del_sql = "DELETE FROM {0}".format(self.pi_table_name)
-        self.delete(del_sql,[])
+        del_sql = "DELETE FROM {0} WHERE `date`= ? AND `value`=?".format(self.pi_table_name)
+        self.delete(del_sql,pis)
         return sum_pis
 
     def save_img(self, ms, key, img_path):
@@ -147,6 +147,9 @@ if __name__ == "__main__":
     dp = data_pool.get_instance()
     imgs = dp.get_imgs(5)
     print imgs
-    #dp.del_img(imgs)
+    dp.del_img(imgs)
+    datas = dp.get_data(100)
+    print len(datas)
+    dp.del_data(datas)
     
     

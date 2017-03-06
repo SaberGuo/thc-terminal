@@ -9,13 +9,17 @@
 import time
 import os
 import json
+import datetime
 
-upload_count = 2
+#upload_count = 8 
+upload_count = 5
+tcpc_dst_url = "192.168.1.107"
+#tcpc_dst_url = "env.thcreate.com"
 #tcpc_dst_url = "123.57.60.239"
-tcpc_dst_url = "env.thcreate.com"
 tcpc_dst_port = 7800
 dns_sn = 6
-data_up_sn = 0
+# data_up_sn = 0
+data_up_sn =0 
 img_up_sn = 1
 config_download_sn = 2
 tcp_server_sn = 7
@@ -26,7 +30,7 @@ self_mask = "255.255.255.0"
 self_gateway = "192.168.1.1"
 
 flock_part = "flock -xn /tmp/wiznet.lock -c "
-max_count = 50000
+max_count = 500000
 once_send_size = 1024
 
 def timer_proc(interval_in_millisecond):
@@ -36,12 +40,12 @@ def timer_proc(interval_in_millisecond):
         min = (t * loop_interval) / 1000 / 60
         sec = (t * loop_interval) / 1000 % 60
         millisecond = (t * loop_interval) % 1000
-        #print('\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond ), end = '\t\t')
-        time.sleep(loop_interval / 1000)
+        #print '\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond )
+        time.sleep(loop_interval / 1000.0)
         t -= 1
     if millisecond != 0:
         millisecond = 0
-        #print('\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond ), end = '\t\t')
+        #print '\rThe remaining time:%02d:%02d:%03d...' % ( min, sec, millisecond )
     #print()
 
 def get_file_size(path):
@@ -65,3 +69,9 @@ def check_json_format(raw_msg):
         return True
     else:
         return False
+
+
+if __name__ == "__main__":
+    print datetime.datetime.now()
+    timer_proc(200)
+    print datetime.datetime.now()

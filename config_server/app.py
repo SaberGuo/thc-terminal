@@ -47,10 +47,11 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     net_power_ctrl("on")
+    out_power_ctrl("off")
     timer_proc(200)
     init_tcpc(self_ip, self_mask, self_gateway)
 
     main_proc()
 
     net_power_ctrl("off")
-    setdown_driver()
+    #setdown_driver()

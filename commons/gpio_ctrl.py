@@ -9,9 +9,9 @@ import RPi.GPIO as gpio
 
 from commons import timer_proc
 
-DSP_POWER_CTRL_GPIO = 13
-AD_POWER_CTRL_GPIO = 17
-NET_POWER_CTRL_GPIO = 6
+DSP_POWER_CTRL_GPIO = 19
+AD_POWER_CTRL_GPIO = 19
+NET_POWER_CTRL_GPIO = 22 
 OUT_POWER_CTRL_GPIO = 26
 
 POWER_DRIVER_CTRL_GPIO_1 = 17
@@ -19,7 +19,7 @@ POWER_DRIVER_CTRL_GPIO_2 = 27
 
 NET_RESET_CTRL_GPIO = 24
 
-ALARM_CTRL_GPIO = 22
+ALARM_CTRL_GPIO = 16 
 
 TIME_FOR_RELAYER = 210
 
@@ -81,10 +81,14 @@ def alarm_off():
 
 if __name__ == "__main__":
     
-    #power_ctrl_init()
-    #setup_driver()
-    #net_power_ctrl("on")
-    alarm_on() 
+    power_ctrl_init()
+    setup_driver()
+    net_power_ctrl("on")
+    #out_power_ctrl("on")
     timer_proc(2000)
-    alarm_off()
+    net_reset()
+
+    #alarm_on() 
+    #timer_proc(2000)
+    #alarm_off()
 

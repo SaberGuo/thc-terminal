@@ -9,9 +9,14 @@ import conclude
 import sys,os
 import time
 from commons.data_pool import data_pool
+from commons.conf import config
 
 def get_Img_key(filepath):
-    return "Img1"
+    img_key = cf = config.get_instance().get_port_key('Img1') 
+    if img_key == None:
+        return "Img1"
+    else:
+        return img_key
 
 if __name__ == "__main__":
     if len(sys.argv)>1 and os.path.exists(sys.argv[1]):
