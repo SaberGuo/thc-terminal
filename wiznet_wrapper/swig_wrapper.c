@@ -6,13 +6,15 @@
 #include "commons.h"
 #include "socket.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include "swig_wrapper.h"
 #include "dns.h"
 #include "rpi.h"
+#define random(x) (rand()%x)
 
-uint8_t dns[4] = {1,2,4,8};
+uint8_t dns[4] = {192,168,1,1};
 uint8_t dns_bk[4] = {210,2,4,8};
 
 
@@ -30,7 +32,7 @@ void init_conf(char *ip, char *mask, char *gateway){
 		printf("WIZCHIP Initialized fail.\r\n");
 		while (1);
 	}
-    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0xef, 0x66},
+    wiz_NetInfo mWIZNETINFO= {.mac = {0x00, 0x08, 0xDC, 0x44, 0xef, 0x62},
         .ip = {192, 168, 1, 105},
         .sn = {255, 255, 255, 0},
         .gw = {192, 168, 1, 1},
@@ -78,7 +80,7 @@ int loopback_tcpc(int sn, char *ip, int port)
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
-    uint16_t any_port = 	50000;
+    uint16_t any_port = 	10000+random(100);
 
     // Socket Status Transitions
     // Check the W5500 Socket n status register (Sn_SR, The 'Sn_SR' controlled by Sn_CR command or Packet send/recv status)
@@ -119,6 +121,7 @@ int loopback_tcpc(int sn, char *ip, int port)
 #ifdef _LOOPBACK_DEBUG_
             printf("%d:Socket Closed\r\n", sn);
 #endif
+            return SOCKERR_TIMEOUT;
             break;
 
         case SOCK_INIT :
@@ -253,7 +256,7 @@ int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
-    uint16_t any_port = 	50000;
+    uint16_t any_port = 	10000+random(100);
 
     // Socket Status Transitions
     // Check the W5500 Socket n status register (Sn_SR, The 'Sn_SR' controlled by Sn_CR command or Packet send/recv status)

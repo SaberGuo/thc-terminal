@@ -470,7 +470,7 @@ int16_t dns_makequery(uint16_t op, char * name, uint8_t * buf, uint16_t len)
  * Note        : timeout : retry count and timer both over.
  */
 uint32_t timeout_count =0;
-uint32_t max_timeout_count = 20000;
+uint32_t max_timeout_count = 80000;
 int8_t check_DNS_timeout(void)
 {
 	static uint8_t retry_count;

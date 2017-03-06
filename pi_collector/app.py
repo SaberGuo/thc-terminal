@@ -5,14 +5,15 @@
   @contact: guoxiao@buaa.edu.cn
   @date: 2017/1/11
 """
-
+import conclude
 import RPi.GPIO as gpio
 import threading
 from commons.data_pool import data_pool
 from commons.commons import timer_proc
 import time
 
-PI_IN_GPIO = 20
+#PI_IN_GPIO =23 
+PI_IN_GPIO =18 
 PI_counts = 0
 
 def interrupt_proc(locker):
@@ -20,9 +21,10 @@ def interrupt_proc(locker):
     gpio.setmode(gpio.BCM)
     gpio.setup(PI_IN_GPIO, gpio.IN, pull_up_down=gpio.PUD_UP)
     while True:
-        gpio.wait_for_edge(25, gpio.FALLING)
+        gpio.wait_for_edge(PI_IN_GPIO, gpio.FALLING)
         locker.acquire()
         PI_counts = PI_counts+1
+        print PI_counts
         locker.release()
 
 
@@ -39,9 +41,12 @@ def main_proc(locker):
 
 if __name__ == "__main__":
     lk = threading.Lock()
-    mp = threading.Thread(target=main_proc, args=(lk))
-    ip = threading.Thread(target=interrupt_proc, args=(lk))
+    
+    mp = threading.Thread(target=main_proc, args=(lk,))
+    ip = threading.Thread(target=interrupt_proc, args=(lk,))
     mp.start()
     ip.start()
     mp.join()
     ip.join()
+    
+    #interrupt_proc(lk)
