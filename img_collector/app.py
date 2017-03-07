@@ -58,15 +58,18 @@ def main_proc():
         tmp_size = 0
         for i in range(chunk_size/once_send_size):
             chunk = f.read(once_send_size)
-            if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
+            last_len = send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk))
+            if last_len == 0:
                 print "error for send data, 55"
                 return
             tmp_size = tmp_size+len(chunk)
 
         chunk = f.read(once_send_size)
-        if 0 == send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk)):
-            print "error for send data, 61"
-            return
+        if len(chunk)>0:
+            last_len = send_data(img_up_sn, p, tcpc_dst_port, chunk, len(chunk))
+            if last_len == 0:
+                print "error for send data, 61"
+                return
         tmp_size = tmp_size+len(chunk)
         print "send data size:",tmp_size
 
