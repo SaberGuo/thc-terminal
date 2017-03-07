@@ -41,16 +41,16 @@ class config(object):
         self.cf.write(str_conf)
         self.cf.flush()
         self.cf.close()
-    def get_device_data(self, device_type, value_i):
+    def get_sensor_data(self, sensor_type, value_i):
         try:
-            return getattr(self,device_type)(value)
+            return getattr(self,sensor_type)(value_i)
         except:
             return 0
     def parse_numeric_data(self, value, port):
         for data_key, data_item in self.data_config.items():
             if data_item['port'] == port:
                 device_type = data_item['device_type']
-                res = self.get_device_data(self, device_type, value)
+                res = self.get_sensor_data(self, device_type, value)
                 
                 #max_v = data_item['max_v']
                 #min_v = data_item['min_v']
@@ -84,9 +84,24 @@ class config(object):
 
     def get_data_upload_invl(self):
         return self.get_ctrl_val('data_upload_invl')
+
     #for device_type methods
-    def soilmt_yx_r1_i(self, value):
-        pass
+    def SOILMTYXR1_H(self, value):
+        return 6.25*value-25
+    def SOILMTYXR1_T(self, value):
+        return 6.25*value-55
+    def CWS1806A1AG_H(self, value):
+        return (value-4)/16*(100)-0
+    def CWS1806A1AG_T(self, value):
+        return (value-4)/16*(60+20)-20
+    def NHZD1CI_S(self, value):
+        return (value-4)/16*200000-0
+    def NHFS45B1_WS(self, value):
+        return (value-4)/16*(60-0)-0
+    def NHFX46A1_WD(self, value):
+        return (value-4)/16*(360-0)-0
+    def KAVT2_V(self, value):
+        return (value-4)/16*(20-0)-0
 
 if __name__ == "__main__":
     cf = config.get_instance().get_port_key("Img1")
