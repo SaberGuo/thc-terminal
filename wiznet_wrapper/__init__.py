@@ -39,7 +39,8 @@ def recv_data(sn,ip, port):
         if ret == WIZNET_TIMEOUT:
             return res
         if ret == WIZNET_GOT_DATA:
-            res = wiz.tcpc_recv(1024)
+            print "got data!"
+            res = wiz.tcpc_recv(2048)
             if res is not None and len(res)>0:
                 return res
 def send_data(sn,ip, port, chunk, length_chunk):

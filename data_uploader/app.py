@@ -41,16 +41,46 @@ def main_proc():
         up_dict['package'][uv[0]] = json.loads(uv[1])
     jup_dict = json.dumps(up_dict)
     print "main proc up dict:",len(jup_dict)
-    if 0 == send_data(data_up_sn, p, tcpc_dst_port, jup_dict, len(jup_dict)):
-        print "send data error"
+    #send for the size
+    up_dict_size = {'device_id': cf.get_device_id(),
+               'device_config_id':cf.get_device_config_id(),
+               'method':'push_data_size',
+               'size':len(jup_dict)}
+    jup_dict_size = json.dumps(up_dict_size)
+    if 0 == send_data(data_up_sn, p, tcpc_dst_port, jup_dict_size, len(jup_dict_size)):
+        print "send data size error"
         return
+    res = recv_data(data_up_sn,p, tcpc_dst_port)
+    print "recieve for datasize", res
+    if res == None:
+        print "replay is none"
+        return
+    try:
+        jres = json.loads(res)
+        print "server replay1:",jres
+        if jres.has_key('method') and jres['method'] != 'push_data_ready':
+            return
+    except Exception as e:
+        print e
+        return
+    tmp_jup_str =''
+    start_index = 0
+    len_jup_str = len(jup_dict)
+    for i in range(len_jup_str/1024+1):     
+        tmp_jup_str = jup_dict[start_index:start_index+(1024 if len_jup_str>1024 else len_jup_str)]
+        if 0 == send_data(data_up_sn, p, tcpc_dst_port, tmp_jup_str, len(tmp_jup_str)):
+            print "send data error"
+            return
+        start_index = start_index+len(tmp_jup_str)
+        len_jup_str = len_jup_str-len(tmp_jup_str)
+        
     res = recv_data(data_up_sn,p, tcpc_dst_port)
     if res == None:
         print "replay is none"
         return
     try:
         jres = json.loads(res)
-        print "server replay:",jres
+        print "server replay2:",jres
         res = None
         if jres.has_key('method') and jres['method'] == 'data_uploaded':
             dp.del_data(upload_values)

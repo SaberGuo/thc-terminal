@@ -56,6 +56,9 @@ void init_conf(char *ip, char *mask, char *gateway){
         return;
     }
     ctlnetwork(CN_SET_NETINFO, (void *)&mWIZNETINFO);
+    uint16_t max_recv_buff;
+    ctlsocket(1,CS_GET_MAXRXBUF, (void *)&max_recv_buff);
+    printf("max recv buff size is %d\n",max_recv_buff);
 #ifdef _WIZNET_DEBUG_
     ctlnetwork(CN_GET_NETINFO, (void *)&mWIZNETINFO);
     printf("mac: 0x%02X-0x%02X-0x%02X-0x%02X-0x%02X-0x%02X\n",
@@ -76,7 +79,8 @@ int loopback_tcpc(int sn, char *ip, int port)
     uint8_t tcpc_ip[4]={0};
     int tcpc_port = 1000;
 	str_to_netarray(tcpc_ip, 4, tmpip);
-
+    int i = 0;
+    int recv_count = 0;
     tcpc_port = port;
     int32_t ret; // return value for SOCK_ERRORs
 	uint16_t size = 0;
@@ -100,11 +104,20 @@ int loopback_tcpc(int sn, char *ip, int port)
             //////////////////////////////////////////////////////////////////////////////////////////////
             if((size = getSn_RX_RSR(sn)) > 0) // Sn_RX_RSR: Socket n Received Size Register, Receiving data length
             {
+                printf("size is %d\n", size);
                 if(size > DATA_BUF_SIZE) size = DATA_BUF_SIZE; // DATA_BUF_SIZE means user defined buffer size (array)
-                ret = srecv(sn, tcpc_buf, size); // Data Receive process (H/W Rx socket buffer -> User's buffer)
-
+                ret = 0;
+                for(i = 0;i<size/1024;++i)
+	        {
+		    ret = srecv(sn, tcpc_buf+ret, 1024); // Data Receive process (H/W Rx socket buffer -> User's buffer)
+                    recv_count += ret;
+                }
+                if(size%1024>0){
+	            ret = srecv(sn, tcpc_buf+ret, 1024); // Data Receive process (H/W Rx socket buffer -> User's buffer)
+                    recv_count += ret;
+		}
                 if(ret <= 0) return ret; // If the received data length <= 0, receive failed and process end
-				tcpc_buf_size = size;
+				tcpc_buf_size = recv_count;
 				return 2; //got recv data
 
                 // Data sentsize control
@@ -228,7 +241,7 @@ int loopback_tcps(int sn, int port)
 }
 
 void tcpc_recv(char *res, size_t *res_size){
-    //printf("%s", tcpc_buf);
+    printf("tcpc_recv:%d\n", strlen(tcpc_buf));
 	*res_size = tcpc_buf_size;
 	size_t i=0;
 	for(;i<*res_size;i++ ){
@@ -247,6 +260,10 @@ void tcps_recv(char *res, size_t *res_size){
 
 int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
 {
+    int i = 0;
+    int send_count = 0;
+    int tmp_count = 0;
+    int tmp_buf_size = buf_size;
     char tmpip[20] = {0};
     strcat(tmpip, ip);
 	uint8_t tcpc_ip[4]={0};
@@ -274,6 +291,16 @@ int socket_send(int sn, char *ip, int port, char *buf, size_t buf_size)
             //////////////////////////////////////////////////////////////////////////////////////////////
             // Data Transaction Parts; Handle the [data receive and send] process
             //////////////////////////////////////////////////////////////////////////////////////////////
+            /*printf("buf_size is %d\n", buf_size/1024+1);
+            for(i = 0;i<buf_size/1024+1;++i){
+                tmp_count = ssend(sn,buf+send_count,tmp_buf_size<1024?tmp_buf_size:1024);
+                printf("tmp_count is %d, i is %d\n", tmp_count, i);
+                send_count+=tmp_count;
+                tmp_buf_size -= tmp_count;
+                printf("buf_size is %d\n", tmp_buf_size);
+            }
+            printf("send_count is %d\n", send_count);
+            return send_count;*/
             return ssend(sn, buf, buf_size);
             //////////////////////////////////////////////////////////////////////////////////////////////
             break;
