@@ -10,6 +10,7 @@ import time
 
 from commons.data_pool import data_pool
 from commons.conf import config
+import re
 
 
 def build_msg(ads_v):
@@ -35,10 +36,10 @@ def build_ads(ads_v):
 def build_PI():
     dp = data_pool.get_instance()
     pi_v = dp.get_pi_value()
-    pi_port ='PI1'
+    pi_port_re = re.compile('^PI\d+')
     cf = config.get_instance()
     for key, content in cf.data_config.items():
-        if content['port'] == pi_port:
+        if pi_port_re.match(content['port']) is not None:
             return (key, {'value':pi_v})
     return (None,None)
 
