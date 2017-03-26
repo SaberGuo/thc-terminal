@@ -13,7 +13,7 @@ class config(object):
     instance = None
     min_s = 4.0
     max_s = 20.0
-    _is_debug = False 
+    _is_debug = False
     _is_local = False
     _debug_ip = "192.168.1.100"
     _debug_port = 8000
@@ -51,7 +51,7 @@ class config(object):
             if data_item['port'] == port:
                 device_type = data_item['sensor_type']
                 res = self.get_sensor_data(device_type, value)
-                
+
                 max_v = data_item['max_v']
                 min_v = data_item['min_v']
                 if res >max_v:
@@ -61,7 +61,7 @@ class config(object):
                 #res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
                 return (data_key, res)
         return (None,None)
-    
+
     def get_port_key(self, port):
         for data_key, data_item in self.data_config.items():
             if data_item['port'] == port:
@@ -105,7 +105,7 @@ class config(object):
     def NHFX46A1_WD(self, value):
         return (value-4)/16*(360-0)-0
     def KAVT2_V(self, value):
-        return (value-4)/16*(20-0)-0
+        return (value-4)/16*(25-0)-0
 
 if __name__ == "__main__":
     cf = config.get_instance().get_port_key("Img1")

@@ -10,7 +10,7 @@ import conclude
 from commons.conf import config
 from commons.gpio_ctrl import *
 import json
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part,check_json_format
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part,check_json_format,deal_systime
 import os
 import time
 from wiznet_wrapper import *
@@ -40,11 +40,6 @@ def deal_crontab(new_control, old_control):
 def deal_config(new_config):
     config.get_instance().update_config(new_config)
 
-def deal_systime(ts):
-    lts = time.localtime(int(ts))
-    cmd  = "sudo date -s \"{2}-{1}-{0} {3}:{4}:{5}\"".format(lts.tm_mday, lts.tm_mon, lts.tm_year, lts.tm_hour, lts.tm_min, lts.tm_sec)
-    print cmd
-    os.system(cmd)
 
 def main_proc():
     p =gethostname(dns_sn, tcpc_dst_url)
@@ -70,7 +65,7 @@ def main_proc():
         res_total = res_total+res
         if check_json_format(res_total):
             break
-    res = res_total   
+    res = res_total
     print "recive data", res
     try:
         jres = json.loads(res)

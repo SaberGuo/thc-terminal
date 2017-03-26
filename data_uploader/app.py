@@ -11,7 +11,7 @@ from commons.data_pool import data_pool
 from commons.conf import config
 from commons.gpio_ctrl import *
 import json
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,data_up_sn,dns_sn,timer_proc
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,data_up_sn,dns_sn,timer_proc,deal_systime
 from wiznet_wrapper import *
 import wiznet_wrapper.wiznet as wiz
 import time
@@ -26,8 +26,8 @@ def main_proc():
     p =gethostname(dns_sn, tcpc_dst_url)
     if len(p)==0:
         return
-    #p = tcpc_dst_url    
-    print tcpc_dst_url    
+    #p = tcpc_dst_url
+    print tcpc_dst_url
     if establish_connect(data_up_sn, p, tcpc_dst_port) == 0:
         print "not established"
         return
@@ -66,14 +66,14 @@ def main_proc():
     tmp_jup_str =''
     start_index = 0
     len_jup_str = len(jup_dict)
-    for i in range(len_jup_str/1024+1):     
+    for i in range(len_jup_str/1024+1):
         tmp_jup_str = jup_dict[start_index:start_index+(1024 if len_jup_str>1024 else len_jup_str)]
         if 0 == send_data(data_up_sn, p, tcpc_dst_port, tmp_jup_str, len(tmp_jup_str)):
             print "send data error"
             return
         start_index = start_index+len(tmp_jup_str)
         len_jup_str = len_jup_str-len(tmp_jup_str)
-        
+
     res = recv_data(data_up_sn,p, tcpc_dst_port)
     if res == None:
         print "replay is none"
@@ -84,13 +84,14 @@ def main_proc():
         res = None
         if jres.has_key('method') and jres['method'] == 'data_uploaded':
             dp.del_data(upload_values)
+            deal_systime(int(jres['ts']))
             return
     except Exception as e:
         print e
     wiz.socket_disconnect(data_up_sn)
     wiz.socket_close(data_up_sn)
 
-     
+
 
 if __name__ == "__main__":
     power_ctrl_init()

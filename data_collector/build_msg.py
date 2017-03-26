@@ -10,6 +10,7 @@ import time
 
 from commons.data_pool import data_pool
 from commons.conf import config
+from commons.commons import every_tip_parts
 import re
 
 
@@ -19,7 +20,7 @@ def build_msg(ads_v):
     pi_key, pi_content = build_PI()
     if pi_key is not None and pi_content is not None:
         data[pi_key] = pi_content
-    print "res for data:", data 
+    print "res for data:", data
     return json.dumps(data)
 
 def build_ads(ads_v):
@@ -40,7 +41,5 @@ def build_PI():
     cf = config.get_instance()
     for key, content in cf.data_config.items():
         if pi_port_re.match(content['port']) is not None:
-            return (key, {'value':pi_v})
+            return (key, {'value':pi_v*every_tip_parts})
     return (None,None)
-
-
