@@ -82,12 +82,10 @@ def alarm_off():
 if __name__ == "__main__":
     
     power_ctrl_init()
-    setup_driver()
-    net_power_ctrl("on")
-    #out_power_ctrl("on")
-    timer_proc(2000)
-    net_reset()
-
+    setdown_driver()
+    net_power_ctrl("off")
+    out_power_ctrl("off")
+    ad_power_ctrl("off")
     #alarm_on() 
     #timer_proc(2000)
     #alarm_off()

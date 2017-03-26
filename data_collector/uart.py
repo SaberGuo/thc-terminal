@@ -24,6 +24,19 @@ class uart_controller(object):
     #                { 'start_pos':0x30, 'value_num':4}]
     
     ad_start_pos = [{ 'start_pos':0x10, 'value_num':4,'frame_num':3},]
+    ad_format_count = 12
+    ad_format_index = [[1.787, 198.69],
+                       [1.7946, 249.82],
+                       [1.7904, 237.21],
+                       [1.7875, 225.68],
+                       [1.7827, 270.45],
+                       [1.7676, 246.35],
+                       [1.7676, 246.35],
+                       [1.8318, 248.55],
+                       [1.7386, 202.61],
+                       [2.9648, 220.67],
+                       [1.8084, 249.04],
+                       [1.7831, 229.33]]
     def __init__(self):
         self.ser = serial.Serial(self.uart_sign, self.uart_baud, timeout=self.uart_timeout)
         #self.ser = serial.Serial(self.uart_sign, self.uart_baud)
@@ -118,8 +131,12 @@ class uart_controller(object):
         for i in range(10):
             res_int.append(randint(0,255))
         return res_int
-    def construct_single_ad(self, value):
-        current = (value-150.0)/4096.0*3*1.757/249*1000
+    def construct_single_ad(self, i, value):
+        if i<self.ad_format_count:
+            print value
+            current = (value*self.ad_format_index[i][0]-self.ad_format_index[i][1])*12.0/4096.0
+        else:
+            current = (value-150.0)/4096.0*3*1.757/249*1000
         return current
     def read_ad_values(self):
         res = []
@@ -134,7 +151,7 @@ class uart_controller(object):
                 for j in range(conf['frame_num']):
                     for i in range(conf['value_num']):
                         iv = uart_controller.bytes_to_ushort(ans,j*13+self.start_pos+i*2)
-                        iv = self.construct_single_ad(iv)
+                        iv = self.construct_single_ad(i, iv)
                         res.append(iv)
             except Exception as e:
                 print e,res

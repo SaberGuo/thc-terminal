@@ -19,12 +19,12 @@ import os
 def main_proc():
     print "start img upload"
     print dns_sn, tcpc_dst_url
-    #p =gethostname(dns_sn, tcpc_dst_url)
-    #print dns_sn, tcpc_dst_url
-    #if len(p)==0:
-    #    print "exit for main proc"
-    #    return
-    p = tcpc_dst_url
+    p =gethostname(dns_sn, tcpc_dst_url)
+    print dns_sn, tcpc_dst_url
+    if len(p)==0:
+        print "exit for main proc"
+        return
+    #p = tcpc_dst_url
     if establish_connect(img_up_sn, p, tcpc_dst_port) == 0:
         print "establish error, 26"
         return

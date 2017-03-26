@@ -14,8 +14,8 @@
 #include "rpi.h"
 #define random(x) (rand()%x)
 
-uint8_t dns[4] = {192,168,1,1};
-uint8_t dns_bk[4] = {210,2,4,8};
+uint8_t dns[4] = {119,29,29,29};
+uint8_t dns_bk[4] = {182,254,116,116};
 
 
 void init_hardware(){

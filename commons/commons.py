@@ -13,8 +13,8 @@ import datetime
 
 #upload_count = 8 
 upload_count = 5
-tcpc_dst_url = "192.168.1.107"
-#tcpc_dst_url = "env.thcreate.com"
+#tcpc_dst_url = "192.168.1.107"
+tcpc_dst_url = "env.thcreate.com"
 #tcpc_dst_url = "123.57.60.239"
 tcpc_dst_port = 7800
 dns_sn = 6

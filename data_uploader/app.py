@@ -23,10 +23,10 @@ def main_proc():
     upload_values = dp.get_data(upload_count)
     if len(upload_values) == 0:
         return
-    #p =gethostname(dns_sn, tcpc_dst_url)
-    #if len(p)==0:
-    #    return
-    p = tcpc_dst_url    
+    p =gethostname(dns_sn, tcpc_dst_url)
+    if len(p)==0:
+        return
+    #p = tcpc_dst_url    
     print tcpc_dst_url    
     if establish_connect(data_up_sn, p, tcpc_dst_port) == 0:
         print "not established"
@@ -96,8 +96,8 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    #timer_proc(70000)
-    timer_proc(700)
+    timer_proc(60000)
+    #timer_proc(700)
     net_power_ctrl("on")
     timer_proc(2000)
     net_reset()

@@ -49,11 +49,15 @@ class config(object):
     def parse_numeric_data(self, value, port):
         for data_key, data_item in self.data_config.items():
             if data_item['port'] == port:
-                device_type = data_item['device_type']
-                res = self.get_sensor_data(self, device_type, value)
+                device_type = data_item['sensor_type']
+                res = self.get_sensor_data(device_type, value)
                 
-                #max_v = data_item['max_v']
-                #min_v = data_item['min_v']
+                max_v = data_item['max_v']
+                min_v = data_item['min_v']
+                if res >max_v:
+                    res = max_v
+                if res <min_v:
+                    res = min_v
                 #res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
                 return (data_key, res)
         return (None,None)

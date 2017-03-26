@@ -10,7 +10,7 @@ import conclude
 from commons.conf import config
 from commons.gpio_ctrl import *
 import json
-from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part
+from commons.commons import upload_count,tcpc_dst_url,tcpc_dst_port,self_ip,self_mask,self_gateway,get_file_size,config_download_sn,timer_proc,dns_sn,flock_part,check_json_format
 import os
 import time
 from wiznet_wrapper import *
@@ -47,8 +47,8 @@ def deal_systime(ts):
     os.system(cmd)
 
 def main_proc():
-    #p =gethostname(dns_sn, tcpc_dst_url)
-    p = tcpc_dst_url
+    p =gethostname(dns_sn, tcpc_dst_url)
+    #p = tcpc_dst_url
     if len(p) == 0:
         return
     if establish_connect(config_download_sn, p, tcpc_dst_port) == 0:
@@ -61,9 +61,17 @@ def main_proc():
     if 0 == send_data(config_download_sn, p, tcpc_dst_port, jup_dict, len(jup_dict)):
         return
 
-    res = recv_data(config_download_sn,p, tcpc_dst_port)
-    if res == None:
-        return
+    print "start recieve data"
+    res_total = ''
+    for i in range(5):
+        res = recv_data(config_download_sn,p, tcpc_dst_port)
+        if res == None:
+            return
+        res_total = res_total+res
+        if check_json_format(res_total):
+            break
+    res = res_total   
+    print "recive data", res
     try:
         jres = json.loads(res)
         print "server replay:",jres
@@ -81,7 +89,8 @@ def main_proc():
             jup_dict = json.dumps(up_dict)
             if 0 == send_data(config_download_sn, p, tcpc_dst_port, jup_dict, len(jup_dict)):
                 return
-    except:
+    except Exception as e:
+        print e
         pass
     wiz.socket_disconnect(config_download_sn)
     wiz.socket_close(config_download_sn)
@@ -90,8 +99,8 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    #timer_proc(72000)
-    timer_proc(7200)
+    timer_proc(52000)
+    #timer_proc(7200)
     net_power_ctrl("on")
     timer_proc(1000)
     net_reset()

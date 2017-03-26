@@ -147,9 +147,9 @@ if __name__ == "__main__":
     dp = data_pool.get_instance()
     imgs = dp.get_imgs(5)
     print imgs
-    dp.del_img(imgs)
+    #dp.del_img(imgs)
     datas = dp.get_data(100)
     print len(datas)
-    dp.del_data(datas)
+    #dp.del_data(datas)
     
     

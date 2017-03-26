@@ -44,6 +44,8 @@ if __name__ == "__main__":
     
     mp = threading.Thread(target=main_proc, args=(lk,))
     ip = threading.Thread(target=interrupt_proc, args=(lk,))
+    mp.setDaemon(True)
+    ip.setDaemon(True)
     mp.start()
     ip.start()
     mp.join()
