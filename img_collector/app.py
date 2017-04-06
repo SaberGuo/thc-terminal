@@ -94,7 +94,7 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    timer_proc(60000)
+    timer_proc(100000)
     net_power_ctrl("on")
     timer_proc(200)
     net_reset()

@@ -97,7 +97,7 @@ if __name__ == "__main__":
     power_ctrl_init()
     setup_driver()
     out_power_ctrl("on")
-    timer_proc(60000)
+    timer_proc(100000)
     #timer_proc(700)
     net_power_ctrl("on")
     timer_proc(2000)

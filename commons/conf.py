@@ -58,7 +58,7 @@ class config(object):
                     res = max_v
                 if res <min_v:
                     res = min_v
-                #res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
+                res = (value-self.min_s)/(self.max_s-self.min_s)*(max_v-min_v)+min_v
                 return (data_key, res)
         return (None,None)
 

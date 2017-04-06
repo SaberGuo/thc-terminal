@@ -8,4 +8,4 @@ command='start.sh'
 
 
 cd ${base_root}${img_collector_name}
-flock -e -w100 /tmp/wiznet.lock -c "echo 'img collector!'; sudo python app.py"
+flock -e -w160 /tmp/wiznet.lock -c "echo 'img collector!'; sudo python app.py"

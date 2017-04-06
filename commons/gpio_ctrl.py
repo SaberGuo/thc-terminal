@@ -18,6 +18,7 @@ POWER_DRIVER_CTRL_GPIO_1 = 17
 POWER_DRIVER_CTRL_GPIO_2 = 27
 
 NET_RESET_CTRL_GPIO = 24
+DSP_RESET_CTRL_GPIO = 18
 
 ALARM_CTRL_GPIO = 16 
 
@@ -33,12 +34,14 @@ def power_ctrl_init():
     gpio.setup(OUT_POWER_CTRL_GPIO, gpio.OUT)
     gpio.setup(ALARM_CTRL_GPIO, gpio.OUT)
     gpio.setup(NET_RESET_CTRL_GPIO, gpio.OUT)
+    gpio.setup(DSP_RESET_CTRL_GPIO, gpio.OUT)
     gpio.output(DSP_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(AD_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(NET_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(OUT_POWER_CTRL_GPIO, gpio.LOW)
     gpio.output(ALARM_CTRL_GPIO, gpio.LOW)
     gpio.output(NET_RESET_CTRL_GPIO, gpio.HIGH)
+    gpio.output(DSP_RESET_CTRL_GPIO, gpio.HIGH)
 
 def setup_driver():
     gpio.output(POWER_DRIVER_CTRL_GPIO_1, gpio.LOW)
@@ -73,6 +76,10 @@ def net_reset():
     timer_proc(200)
     power_ctrl(NET_RESET_CTRL_GPIO, "on")
     timer_proc(200)
+def dsp_reset():
+    power_ctrl(DSP_RESET_CTRL_GPIO, "off")
+    timer_proc(200)
+    power_ctrl(DSP_RESET_CTRL_GPIO, "on")
 def alarm_on():
     gpio.output(ALARM_CTRL_GPIO, gpio.HIGH)
 
@@ -82,10 +89,12 @@ def alarm_off():
 if __name__ == "__main__":
     
     power_ctrl_init()
-    setdown_driver()
-    net_power_ctrl("off")
-    out_power_ctrl("off")
-    ad_power_ctrl("off")
+    setup_driver()
+    #net_power_ctrl("off")
+    #out_power_ctrl("off")
+    ad_power_ctrl("on")
+    #timer_proc(200)
+    dsp_reset()
     #alarm_on() 
     #timer_proc(2000)
     #alarm_off()

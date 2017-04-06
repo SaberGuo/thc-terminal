@@ -25,18 +25,18 @@ class uart_controller(object):
     
     ad_start_pos = [{ 'start_pos':0x10, 'value_num':4,'frame_num':3},]
     ad_format_count = 12
-    ad_format_index = [[1.787, 198.69],
-                       [1.7946, 249.82],
-                       [1.7904, 237.21],
-                       [1.7875, 225.68],
-                       [1.7827, 270.45],
-                       [1.7676, 246.35],
-                       [1.7676, 246.35],
-                       [1.8318, 248.55],
-                       [1.7386, 202.61],
-                       [2.9648, 220.67],
-                       [1.8084, 249.04],
-                       [1.7831, 229.33]]
+    ad_format_index = [[2.2261, 49.248],
+                       [2.2557, 69.179],
+                       [2.2222, 57.902],
+                       [2.2212, 67.187],
+                       [2.1706, 82.135],
+                       [2.221, 70.634],
+                       [2.2213,79.606],
+                       [2.1845, 93.705],
+                       [2.2072, 61.486],
+                       [3.6177, 80.657],
+                       [2.2378, 79.651],
+                       [2.2314, 78.603]]
     def __init__(self):
         self.ser = serial.Serial(self.uart_sign, self.uart_baud, timeout=self.uart_timeout)
         #self.ser = serial.Serial(self.uart_sign, self.uart_baud)
