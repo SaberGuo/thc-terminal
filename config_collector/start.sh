@@ -9,4 +9,4 @@ command='start.sh'
 
 
 cd ${base_root}${config_collector_name}
-flock -e -w100 /tmp/wiznet.lock -c "sudo python app.py"
+flock -e -w300 /tmp/wiznet.lock -c "sudo python app.py"
