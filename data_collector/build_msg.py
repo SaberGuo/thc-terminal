@@ -41,5 +41,5 @@ def build_PI():
     cf = config.get_instance()
     for key, content in cf.data_config.items():
         if pi_port_re.match(content['port']) is not None:
-            return (key, {'value':pi_v*every_tip_parts})
+            return (key, {'value':round(pi_v*every_tip_parts,1)})
     return (None,None)

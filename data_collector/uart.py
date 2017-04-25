@@ -133,7 +133,7 @@ class uart_controller(object):
         return res_int
     def construct_single_ad(self, i, value):
         if i<self.ad_format_count:
-            print value
+            print value,self.ad_format_index[i][0],self.ad_format_index[i][1]
             current = (value*self.ad_format_index[i][0]-self.ad_format_index[i][1])*12.0/4096.0
         else:
             current = (value-150.0)/4096.0*3*1.757/249*1000
@@ -151,7 +151,7 @@ class uart_controller(object):
                 for j in range(conf['frame_num']):
                     for i in range(conf['value_num']):
                         iv = uart_controller.bytes_to_ushort(ans,j*13+self.start_pos+i*2)
-                        iv = self.construct_single_ad(i, iv)
+                        iv = self.construct_single_ad(i+j*4, iv)
                         res.append(iv)
             except Exception as e:
                 print e,res
